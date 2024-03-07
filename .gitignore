@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### config ###
+application-jwt.yml
+application-mysql.yml
