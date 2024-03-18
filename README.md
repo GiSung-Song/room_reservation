@@ -13,6 +13,8 @@
 - Spring Security
 - JWT
 - MySQL
+- Redis
+- Swagger
 
 
 ## 개발 기간
