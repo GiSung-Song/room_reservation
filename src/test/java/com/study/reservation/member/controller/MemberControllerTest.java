@@ -1,6 +1,7 @@
 package com.study.reservation.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.study.reservation.config.security.SecurityConfig;
 import com.study.reservation.member.dto.MemberSignUpDto;
 import com.study.reservation.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(MemberController.class)
+@Import(SecurityConfig.class)
 class MemberControllerTest {
 
     @Autowired
@@ -39,7 +42,6 @@ class MemberControllerTest {
     }
 
     @DisplayName("회원가입 테스트")
-    @WithMockUser
     @Test
     void 회원가입_성공_테스트() throws Exception {
         given(memberService.signUp(makeDto())).willReturn(1L);
@@ -54,7 +56,6 @@ class MemberControllerTest {
     }
 
     @DisplayName("회원가입 테스트")
-    @WithMockUser
     @Test
     void 회원가입_실패_테스트() throws Exception {
         MemberSignUpDto dto = makeDto();

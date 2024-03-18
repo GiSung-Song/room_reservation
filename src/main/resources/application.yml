@@ -19,3 +19,8 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
