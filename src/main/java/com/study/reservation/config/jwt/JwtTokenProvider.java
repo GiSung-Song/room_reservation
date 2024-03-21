@@ -19,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -131,11 +132,14 @@ public class JwtTokenProvider {
     }
 
     //RefreshToken 추출
-    public Optional<String> extractRefreshToken(HttpServletRequest request) {
+    public String extractRefreshToken(HttpServletRequest request) {
+        log.info("RefreshToken 추출");
+
         if (request.getCookies() != null) {
             return Arrays.stream(request.getCookies()).filter(c -> c.getName().equalsIgnoreCase(REFRESH_COOKIE_NAME))
                     .findFirst()
-                    .map(c -> c.getValue());
+                    .map(c -> c.getValue())
+                    .orElse(null);
         } else {
             return null;
         }
@@ -148,10 +152,12 @@ public class JwtTokenProvider {
                 .build()
                 .verify(accessToken)
                 .getClaim(EMAIL_CLAIM)
-                .toString();
+                .asString();
+
+        log.info("userEmail : {}", userEmail);
 
         Member member = memberRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new UsernameNotFoundException("회원을 찾을 수 없습니다."));
 
         UserDetails userDetails = User.builder()
                 .username(member.getEmail())

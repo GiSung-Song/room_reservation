@@ -12,46 +12,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final List<String> NO_CHECK_URL = List.of(
-            "/login"
-    );
+    private static final String NO_CHECK_URL = "/login";
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final RedisRepository redisRepository;
-
-    private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        log.info("shouldNotFilter 필터 실행");
-
-        String path = request.getRequestURI();
-
-        /**
-         * /** 로 끝나면 앞의 url 로 시작하는 패턴 match
-         * 나머지는 일치하는 글자 match
-         */
-        return NO_CHECK_URL.stream().anyMatch(url -> {
-            if (url.endsWith("/**")) {
-                return path.startsWith(url.substring(0, url.length() - 3));
-            } else {
-                return url.equalsIgnoreCase(path);
-            }
-        });
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -59,8 +33,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.info("요청 URI : {}", request.getRequestURI());
         log.info("요청 Method : {}", request.getMethod());
 
+        // /login 요청이 오면
+        if (request.getRequestURI().equals(NO_CHECK_URL)) {
+            //다음 filter 실행
+            filterChain.doFilter(request, response);
+            return; //이후 필터 진행 막기
+        }
+
         String accessToken = jwtTokenProvider.extractAccessToken(request).orElse(null);
-        String refreshToken = jwtTokenProvider.extractRefreshToken(request).orElse(null);
+        String refreshToken = jwtTokenProvider.extractRefreshToken(request);
 
         //액세스 토큰이 유효한 경우
         if (accessToken != null && jwtTokenProvider.isTokenValid(accessToken)) {
