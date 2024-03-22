@@ -27,6 +27,7 @@ public class MemberSignUpDto {
 
     @Schema(description = "비밀번호")
     @NotBlank(message = "비밀번호를 입력해주세요.")
+    @Size(min = 8, max = 15, message = "8 ~ 15자로 입력해주세요.")
     private String password;
 
     @Schema(description = "전화번호", example = "01012345678")

@@ -43,4 +43,12 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Role role = Role.MEMBER;
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }

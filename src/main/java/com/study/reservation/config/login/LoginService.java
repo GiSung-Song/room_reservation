@@ -24,7 +24,7 @@ public class LoginService implements UserDetailsService {
         log.info("loadUserByUsername 실행 / username : {}", email);
 
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일으ㅡㄹ 가진 회원이 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         return User.builder()
                 .username(member.getEmail())

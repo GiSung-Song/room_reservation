@@ -2,7 +2,9 @@ package com.study.reservation.member.service;
 
 import com.study.reservation.config.exception.CustomException;
 import com.study.reservation.config.exception.ErrorCode;
+import com.study.reservation.member.dto.MemberInfoResDto;
 import com.study.reservation.member.dto.MemberSignUpDto;
+import com.study.reservation.member.dto.MemberUpdateReqDto;
 import com.study.reservation.member.entity.Member;
 import com.study.reservation.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -102,6 +104,76 @@ class MemberServiceTest {
             verify(memberRepository, times(0)).save(any());
         }
 
+    }
+
+    @Nested
+    class Info {
+
+        @DisplayName("성공 테스트")
+        @Test
+        void 개인정보조회_성공테스트() {
+            //given
+            MemberSignUpDto memberSignUpDto = createDto();
+            Member member = toEntity(memberSignUpDto);
+
+            Long fakeId = 1L;
+            ReflectionTestUtils.setField(member, "id", fakeId);
+
+            //mocking
+            given(memberRepository.findByEmail(member.getEmail())).willReturn(Optional.ofNullable(member));
+
+            MemberInfoResDto memberInfo = memberService.getMemberInfo(member.getEmail());
+
+            assertEquals(memberInfo.getEmail(), member.getEmail());
+            assertEquals(memberInfo.getName(), member.getName());
+            assertEquals(memberInfo.getNickname(), member.getNickname());
+        }
+
+        @DisplayName("실패 테스트")
+        @Test
+        void 개인정보조회_실패테스트() {
+            //given
+            doThrow(new CustomException(ErrorCode.NOT_FOUND_MEMBER)).when(memberService).getMemberInfo(any(String.class));
+
+            assertThrows(CustomException.class, () -> memberService.getMemberInfo("test@test.com"));
+        }
+    }
+
+    @Nested
+    class Update {
+
+        @DisplayName("성공 테스트")
+        @Test
+        void 개인정보수정_성공테스트() {
+            MemberSignUpDto memberSignUpDto = createDto();
+            Member member = toEntity(memberSignUpDto);
+
+            MemberUpdateReqDto memberUpdateReqDto = new MemberUpdateReqDto();
+            memberUpdateReqDto.setNickname("test1234");
+            memberUpdateReqDto.setPassword("test1234");
+
+            //mocking
+            given(memberRepository.findByEmail(member.getEmail())).willReturn(Optional.ofNullable(member));
+
+            memberService.updateMember(member.getEmail(), memberUpdateReqDto);
+            Member findMember = memberRepository.findByEmail(member.getEmail()).get();
+
+            assertEquals(findMember.getNickname(), memberUpdateReqDto.getNickname());
+        }
+
+        @DisplayName("실패 테스트")
+        @Test
+        void 개인정보수정_실패테스트() {
+            MemberSignUpDto memberSignUpDto = createDto();
+            Member member = toEntity(memberSignUpDto);
+
+            MemberUpdateReqDto memberUpdateReqDto = new MemberUpdateReqDto();
+            memberUpdateReqDto.setNickname("te");
+
+            doThrow(new CustomException(ErrorCode.NOT_VALID_NICKNAME)).when(memberService).updateMember(member.getEmail(), memberUpdateReqDto);
+
+            assertThrows(CustomException.class, () -> memberService.updateMember(member.getEmail(), memberUpdateReqDto));
+        }
     }
 
 }

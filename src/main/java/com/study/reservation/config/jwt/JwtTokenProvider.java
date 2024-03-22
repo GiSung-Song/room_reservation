@@ -157,7 +157,7 @@ public class JwtTokenProvider {
         log.info("userEmail : {}", userEmail);
 
         Member member = memberRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         UserDetails userDetails = User.builder()
                 .username(member.getEmail())

@@ -18,6 +18,8 @@ public enum ErrorCode {
     DUPLICATE_COMPANY_NUMBER(HttpStatus.CONFLICT, "이미 등록된 사업자등록번호입니다."),
 
     NOT_VALID_ERROR(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."),
+    NOT_VALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임은 3 ~ 10자 입니다."),
+    NOT_VALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 8 ~ 15자 입니다.")
 
     ;
 
