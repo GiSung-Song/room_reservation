@@ -35,13 +35,16 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
+    @Column(nullable = false)
     private Membership membership = Membership.BRONZE;
 
     @Builder.Default()
+    @Column(nullable = false)
     private int point = 0;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
+    @Column(nullable = false)
     private Role role = Role.MEMBER;
 
     public void updateNickname(String nickname) {
