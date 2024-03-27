@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.reservation.config.jwt.JwtTokenProvider;
 import com.study.reservation.config.jwt.filter.member.JwtAuthenticationFilter;
 import com.study.reservation.config.login.LoginFailureHandler;
-import com.study.reservation.config.login.member.CustomUsernamePasswordAuthenticationFilter;
 import com.study.reservation.config.login.LoginService;
+import com.study.reservation.config.login.member.CustomUsernamePasswordAuthenticationFilter;
 import com.study.reservation.config.login.member.LoginSuccessHandler;
 import com.study.reservation.config.redis.RedisRepository;
 import com.study.reservation.member.repository.MemberRepository;
@@ -13,11 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
@@ -30,7 +32,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Order(2)
+@Order(1)
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -96,7 +98,7 @@ public class SecurityConfig {
                         .deleteCookies("RefreshCookie"))
                 .httpBasic(HttpBasicConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/member/**").hasRole("MEMBER")
+                        .requestMatchers("/member**").hasRole("MEMBER")
                         .anyRequest().authenticated());
 
         return httpSecurity.build();

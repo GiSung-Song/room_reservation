@@ -32,7 +32,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Order(1)
+@Order(0)
 public class AdminSecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -52,7 +52,7 @@ public class AdminSecurityConfig {
     }
 
     @Bean
-    public LoginFailureHandler loginFailureHandler() {
+    public LoginFailureHandler adminLoginFailureHandler() {
         return new LoginFailureHandler();
     }
 
@@ -61,25 +61,25 @@ public class AdminSecurityConfig {
         AdminCustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter
                 = new AdminCustomUsernamePasswordAuthenticationFilter(objectMapper);
 
-        customUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
+        customUsernamePasswordAuthenticationFilter.setAuthenticationManager(adminAuthenticationManager());
         customUsernamePasswordAuthenticationFilter.setAuthenticationSuccessHandler(adminLoginSuccessHandler());
-        customUsernamePasswordAuthenticationFilter.setAuthenticationFailureHandler(loginFailureHandler());
+        customUsernamePasswordAuthenticationFilter.setAuthenticationFailureHandler(adminLoginFailureHandler());
 
         return customUsernamePasswordAuthenticationFilter;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager() {
+    public AuthenticationManager adminAuthenticationManager() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        daoAuthenticationProvider.setPasswordEncoder(adminPasswordEncoder());
         daoAuthenticationProvider.setUserDetailsService(loginService);
 
         return new ProviderManager(daoAuthenticationProvider);
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder adminPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -95,6 +95,7 @@ public class AdminSecurityConfig {
     @Bean
     public SecurityFilterChain securityAdminFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+                .securityMatcher("/admin/**")
                 .addFilterAfter(adminCustomUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
                 .addFilterBefore(jwtAdminAuthenticationFilter(), AdminCustomUsernamePasswordAuthenticationFilter.class)
                 .csrf(CsrfConfigurer::disable)
