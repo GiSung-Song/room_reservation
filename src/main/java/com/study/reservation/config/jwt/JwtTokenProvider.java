@@ -2,6 +2,8 @@ package com.study.reservation.config.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.study.reservation.admin.entity.Admin;
+import com.study.reservation.admin.repository.AdminRepository;
 import com.study.reservation.config.exception.CustomException;
 import com.study.reservation.config.exception.ErrorCode;
 import com.study.reservation.config.jwt.filter.RefreshToken;
@@ -19,7 +21,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -35,9 +36,11 @@ public class JwtTokenProvider {
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String EMAIL_CLAIM = "email";
+    private static final String COMPANY_NUMBER_CLAIM = "companyNumber";
     private static final String TOKEN_PREFIX = "Bearer ";
     private static final String REFRESH_COOKIE_NAME = "RefreshCookie";
 
+    private final AdminRepository adminRepository;
     private final MemberRepository memberRepository;
     private final RedisRepository redisRepository;
 
@@ -63,6 +66,19 @@ public class JwtTokenProvider {
                 .withSubject(ACCESS_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(now.getTime() + accessTokenExpirationTime))
                 .withClaim(EMAIL_CLAIM, email)
+                .sign(Algorithm.HMAC512(secretKey));
+    }
+
+    //AccessToken 생성
+    public String createAdminAccessToken(String companyNumber) {
+        log.info("AccessToken 생성");
+
+        Date now = new Date();
+
+        return JWT.create()
+                .withSubject(ACCESS_TOKEN_SUBJECT)
+                .withExpiresAt(new Date(now.getTime() + accessTokenExpirationTime))
+                .withClaim(COMPANY_NUMBER_CLAIM, companyNumber)
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
@@ -99,13 +115,20 @@ public class JwtTokenProvider {
         response.setHeader(accessHeader, TOKEN_PREFIX + accessToken); //ex) AccessToken : BEARER fdjiaopjfdipoas
     }
 
-    public void createAndSendToken(HttpServletResponse response, String email) {
+    public void createAndSendToken(HttpServletResponse response, String id, boolean memberYn) {
         log.info("createAndSendToken 실행");
 
-        String accessToken = createAccessToken(email);
+        String accessToken = "";
+
+        if (memberYn == true) {
+            accessToken = createAccessToken(id);
+        } else {
+            accessToken = createAdminAccessToken(id);
+        }
+
         String refreshToken = createRefreshToken();
 
-        RefreshToken refresh = new RefreshToken(refreshToken, email);
+        RefreshToken refresh = new RefreshToken(refreshToken, id);
 
         //response Header 설정
         response.setStatus(HttpServletResponse.SC_OK);
@@ -163,6 +186,29 @@ public class JwtTokenProvider {
                 .username(member.getEmail())
                 .password(member.getPassword())
                 .roles(member.getRole().name())
+                .build();
+
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    }
+
+    public Authentication getAdminAuthentication(String accessToken) {
+        log.info("AccessToken -> Authentication 가져오기");
+
+        String companyNumber = JWT.require(Algorithm.HMAC512(secretKey))
+                .build()
+                .verify(accessToken)
+                .getClaim(COMPANY_NUMBER_CLAIM)
+                .asString();
+
+        log.info("companyNumber : {}", companyNumber);
+
+        Admin admin = adminRepository.findByCompanyNumber(companyNumber)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COMPANY_NUMBER));
+
+        UserDetails userDetails = User.builder()
+                .username(admin.getCompanyNumber())
+                .password(admin.getPassword())
+                .roles(admin.getRole().name())
                 .build();
 
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

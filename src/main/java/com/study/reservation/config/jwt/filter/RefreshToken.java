@@ -10,10 +10,10 @@ public class RefreshToken {
 
     @Id
     private String refreshToken;
-    private String email;
+    private String id;
 
-    public RefreshToken(String refreshToken, String email) {
+    public RefreshToken(String refreshToken, String id) {
         this.refreshToken = refreshToken;
-        this.email = email;
+        this.id = id;
     }
 }

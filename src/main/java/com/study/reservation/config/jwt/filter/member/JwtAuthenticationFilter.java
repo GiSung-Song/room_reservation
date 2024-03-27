@@ -1,8 +1,9 @@
-package com.study.reservation.config.jwt.filter;
+package com.study.reservation.config.jwt.filter.member;
 
 import com.study.reservation.config.exception.CustomException;
 import com.study.reservation.config.exception.ErrorCode;
 import com.study.reservation.config.jwt.JwtTokenProvider;
+import com.study.reservation.config.jwt.filter.RefreshToken;
 import com.study.reservation.config.redis.RedisRepository;
 import com.study.reservation.member.repository.MemberRepository;
 import jakarta.servlet.FilterChain;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("JwtAuthenticationFilter - doFilterInternal 필터 호출");
+        log.info("JwtAuthenticationFilter Member - doFilterInternal 필터 호출");
         log.info("요청 URI : {}", request.getRequestURI());
         log.info("요청 Method : {}", request.getMethod());
 
@@ -53,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (refreshToken != null && jwtTokenProvider.isTokenValid(refreshToken)) {
                 RefreshToken refresh = redisRepository.findById(refreshToken).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_REFRESH_TOKEN));
                 String savedRefreshToken = refresh.getRefreshToken();
-                String email = refresh.getEmail();
+                String email = refresh.getId();
 
                 //저장된 refreshToken이 없는 경우 throw
                 if (savedRefreshToken == null) {

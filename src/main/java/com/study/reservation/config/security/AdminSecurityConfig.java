@@ -1,23 +1,25 @@
 package com.study.reservation.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.study.reservation.admin.repository.AdminRepository;
 import com.study.reservation.config.jwt.JwtTokenProvider;
-import com.study.reservation.config.jwt.filter.member.JwtAuthenticationFilter;
+import com.study.reservation.config.jwt.filter.admin.JwtAdminAuthenticationFilter;
 import com.study.reservation.config.login.LoginFailureHandler;
-import com.study.reservation.config.login.member.CustomUsernamePasswordAuthenticationFilter;
 import com.study.reservation.config.login.LoginService;
-import com.study.reservation.config.login.member.LoginSuccessHandler;
+import com.study.reservation.config.login.admin.AdminCustomUsernamePasswordAuthenticationFilter;
+import com.study.reservation.config.login.admin.AdminLoginSuccessHandler;
 import com.study.reservation.config.redis.RedisRepository;
-import com.study.reservation.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
@@ -30,23 +32,23 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Order(2)
-public class SecurityConfig {
+@Order(1)
+public class AdminSecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
     private final LoginService loginService;
     private final RedisRepository redisRepository;
-    private final MemberRepository memberRepository;
+    private final AdminRepository adminRepository;
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenProvider, memberRepository, redisRepository);
+    public JwtAdminAuthenticationFilter jwtAdminAuthenticationFilter() {
+        return new JwtAdminAuthenticationFilter(jwtTokenProvider, adminRepository, redisRepository);
     }
 
     @Bean
-    public LoginSuccessHandler loginSuccessHandler() {
-        return new LoginSuccessHandler(jwtTokenProvider);
+    public AdminLoginSuccessHandler adminLoginSuccessHandler() {
+        return new AdminLoginSuccessHandler(jwtTokenProvider);
     }
 
     @Bean
@@ -55,12 +57,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter() {
-        CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter
-                = new CustomUsernamePasswordAuthenticationFilter(objectMapper);
+    public AdminCustomUsernamePasswordAuthenticationFilter adminCustomUsernamePasswordAuthenticationFilter() {
+        AdminCustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter
+                = new AdminCustomUsernamePasswordAuthenticationFilter(objectMapper);
 
         customUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
-        customUsernamePasswordAuthenticationFilter.setAuthenticationSuccessHandler(loginSuccessHandler());
+        customUsernamePasswordAuthenticationFilter.setAuthenticationSuccessHandler(adminLoginSuccessHandler());
         customUsernamePasswordAuthenticationFilter.setAuthenticationFailureHandler(loginFailureHandler());
 
         return customUsernamePasswordAuthenticationFilter;
@@ -82,10 +84,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> {
+            web.ignoring()
+                    .requestMatchers(HttpMethod.POST, "/admin/login", "/admin/join", "/join", "/login")
+                    .requestMatchers("/v3/**", "/swagger*/**");
+        };
+    }
+
+    @Bean
+    public SecurityFilterChain securityAdminFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .addFilterAfter(customUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter(), CustomUsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(adminCustomUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
+                .addFilterBefore(jwtAdminAuthenticationFilter(), AdminCustomUsernamePasswordAuthenticationFilter.class)
                 .csrf(CsrfConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .sessionManagement(session -> session
@@ -96,8 +107,8 @@ public class SecurityConfig {
                         .deleteCookies("RefreshCookie"))
                 .httpBasic(HttpBasicConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/member/**").hasRole("MEMBER")
-                        .anyRequest().authenticated());
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/join").permitAll());
 
         return httpSecurity.build();
     }

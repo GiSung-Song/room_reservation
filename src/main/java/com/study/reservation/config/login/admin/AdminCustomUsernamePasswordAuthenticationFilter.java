@@ -1,4 +1,4 @@
-package com.study.reservation.config.login;
+package com.study.reservation.config.login.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.reservation.config.exception.CustomException;
@@ -19,26 +19,26 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Slf4j
-public class CustomUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class AdminCustomUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private static final String DEFAULT_LOGIN_REQUEST_URL = "/login"; // /login 으로 오는 요청을 처리
+    private static final String DEFAULT_LOGIN_REQUEST_URL = "/admin/login"; // /login 으로 오는 요청을 처리
     private static final String HTTP_METHOD = "POST"; // 로그인 HTTP 메소드는 POST
     private static final String CONTENT_TYPE = "application/json"; // application/json 타입의 데이터로 오는 요청
-    private static final String USERNAME_KEY = "email"; //로그인 시 아이디를 이메일로 받기
+    private static final String USERNAME_KEY = "companyNumber"; //로그인 시 아이디를 이메일로 받기
     private static final String PASSWORD_KEY = "password"; //로그인 시 패스워드
     private static final AntPathRequestMatcher DEFAULT_LOGIN_PATH_REQUEST_MATCHER =
             new AntPathRequestMatcher(DEFAULT_LOGIN_REQUEST_URL, HTTP_METHOD);
 
     private final ObjectMapper objectMapper;
 
-    public CustomUsernamePasswordAuthenticationFilter(ObjectMapper objectMapper) {
+    public AdminCustomUsernamePasswordAuthenticationFilter(ObjectMapper objectMapper) {
         super(DEFAULT_LOGIN_PATH_REQUEST_MATCHER); //로그인 요청 처리
         this.objectMapper = objectMapper;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        log.info("로그인 시도 필터 실행");
+        log.info("로그인 시도 필터 실행 - admin");
 
         //content type이 null 이거나 application/json이 아닌 경우
         if (request.getContentType() == null || !request.getContentType().equals(CONTENT_TYPE)) {
@@ -53,10 +53,10 @@ public class CustomUsernamePasswordAuthenticationFilter extends AbstractAuthenti
         // <"email", "이메일">, <"password", "비밀번호">
         Map<String, String> usernamePasswordMap = objectMapper.readValue(messageBody, Map.class);
 
-        String email = usernamePasswordMap.get(USERNAME_KEY); //이메일
+        String companyNumber = usernamePasswordMap.get(USERNAME_KEY); //사업자등록번호
         String password = usernamePasswordMap.get(PASSWORD_KEY); //비밀번호
 
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(email, password); //principal : email, credentials : password
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(companyNumber, password); //principal : companyNumber, credentials : password
 
         return this.getAuthenticationManager().authenticate(authRequest);
     }

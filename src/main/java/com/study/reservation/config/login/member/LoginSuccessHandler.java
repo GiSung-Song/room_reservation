@@ -1,4 +1,4 @@
-package com.study.reservation.config.login;
+package com.study.reservation.config.login.member;
 
 import com.study.reservation.config.jwt.JwtTokenProvider;
 import jakarta.servlet.ServletException;
@@ -27,6 +27,6 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String email = userDetails.getUsername();
 
         //액세스 토큰 + 리프레시 토큰 전송
-        jwtTokenProvider.createAndSendToken(response, email);
+        jwtTokenProvider.createAndSendToken(response, email, true);
     }
 }

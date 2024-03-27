@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogAspect {
 
-    @Around("execution(* com.study.reservation.member..*(..))")
+    @Around("execution(* com.study.reservation.member..*(..)) || execution(* com.study.reservation.admin..*(..))")
     public Object logging(ProceedingJoinPoint pjp) throws Throwable {
         log.info("start -> " + pjp.getSignature().getDeclaringTypeName() + " / " + pjp.getSignature().getName());
 
