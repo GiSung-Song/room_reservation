@@ -1,4 +1,4 @@
-package com.study.reservation.admin.repository;
+package com.study.reservation.config.jwt.repository;
 
 import com.study.reservation.admin.entity.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;

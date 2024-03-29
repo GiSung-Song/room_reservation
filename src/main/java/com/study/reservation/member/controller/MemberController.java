@@ -31,7 +31,7 @@ public class MemberController {
     public ResponseEntity<ApiResponse<String>> signUp(@Valid @RequestBody MemberSignUpDto memberSignUpDto) {
         memberService.signUp(memberSignUpDto);
 
-        return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, HTTP_STATUS_OK.toString(), "회원가입에 성공하였습니다."));
+        return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK,"회원가입에 성공하였습니다."));
     }
 
     @Operation(summary = "개인정보", description = "개인정보를 조회한다.")
@@ -41,7 +41,7 @@ public class MemberController {
 
         MemberInfoResDto memberInfo = memberService.getMemberInfo(email);
 
-        return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, HTTP_STATUS_OK.toString(), memberInfo));
+        return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "개인정보 조회를 성공했습니다.", memberInfo));
     }
 
     @Operation(summary = "개인정보 수정", description = "개인정보를 수정한다.")
@@ -51,7 +51,7 @@ public class MemberController {
 
         memberService.updateMember(email, memberUpdateReqDto);
 
-        return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, HTTP_STATUS_OK.toString(), "개인정보를 수정했습니다."));
+        return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "개인정보를 수정했습니다."));
     }
 
     private static String getAuthEmail() {

@@ -42,7 +42,7 @@ public class CustomExceptionHandler {
     protected ResponseEntity<ErrorResponse> customExceptionHandler(CustomException e) {
         log.error("customExceptionHandler", e);
 
-        ErrorResponse errorResponse = ErrorResponse.of(e.getErrorCode());
+        ErrorResponse errorResponse = ErrorResponse.of(e.getErrorCode(), String.valueOf(e.getErrorCode()));
 
         return new ResponseEntity<>(errorResponse, e.getErrorCode().getHttpStatus());
     }

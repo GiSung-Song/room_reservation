@@ -1,7 +1,7 @@
 package com.study.reservation.config.login;
 
 import com.study.reservation.admin.entity.Admin;
-import com.study.reservation.admin.repository.AdminRepository;
+import com.study.reservation.config.jwt.repository.AdminRepository;
 import com.study.reservation.config.exception.CustomException;
 import com.study.reservation.config.exception.ErrorCode;
 import com.study.reservation.member.entity.Member;

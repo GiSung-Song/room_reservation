@@ -2,7 +2,7 @@ package com.study.reservation.admin.service;
 
 import com.study.reservation.admin.dto.AdminSignUpDto;
 import com.study.reservation.admin.entity.Admin;
-import com.study.reservation.admin.repository.AdminRepository;
+import com.study.reservation.config.jwt.repository.AdminRepository;
 import com.study.reservation.config.exception.CustomException;
 import com.study.reservation.config.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +40,14 @@ public class AdminService {
                 .build();
 
         return adminRepository.save(admin).getId();
+    }
+
+    public boolean existCompanyNumber(String companyNumber) {
+        if (adminRepository.findByCompanyNumber(companyNumber).isPresent()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

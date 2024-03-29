@@ -3,7 +3,7 @@ package com.study.reservation.config.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.study.reservation.admin.entity.Admin;
-import com.study.reservation.admin.repository.AdminRepository;
+import com.study.reservation.config.jwt.repository.AdminRepository;
 import com.study.reservation.config.exception.CustomException;
 import com.study.reservation.config.exception.ErrorCode;
 import com.study.reservation.config.jwt.filter.RefreshToken;

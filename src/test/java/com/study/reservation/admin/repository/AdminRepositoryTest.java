@@ -1,6 +1,7 @@
 package com.study.reservation.admin.repository;
 
 import com.study.reservation.admin.entity.Admin;
+import com.study.reservation.config.jwt.repository.AdminRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

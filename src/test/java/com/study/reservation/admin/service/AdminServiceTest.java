@@ -2,7 +2,7 @@ package com.study.reservation.admin.service;
 
 import com.study.reservation.admin.dto.AdminSignUpDto;
 import com.study.reservation.admin.entity.Admin;
-import com.study.reservation.admin.repository.AdminRepository;
+import com.study.reservation.config.jwt.repository.AdminRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

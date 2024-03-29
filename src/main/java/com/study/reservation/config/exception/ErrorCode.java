@@ -20,7 +20,12 @@ public enum ErrorCode {
 
     NOT_VALID_ERROR(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."),
     NOT_VALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임은 3 ~ 10자 입니다."),
-    NOT_VALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 8 ~ 15자 입니다.")
+    NOT_VALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 8 ~ 15자 입니다."),
+    NOT_VALID_COMPANY(HttpStatus.BAD_REQUEST, "사업자 정보가 올바르지 않습니다."),
+
+    CLOSE_COMPANY_NUMBER(HttpStatus.BAD_REQUEST, "휴업중이거나 폐업한 사업자번호입니다."),
+
+    OPEN_API_INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "OPEN API 요청 중 오류가 발생하였습니다."),
 
     ;
 
