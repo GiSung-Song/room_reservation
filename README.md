@@ -22,4 +22,4 @@
 
 
 ## ERD
-![image](https://github.com/GiSung-Song/room_reservation/assets/83264696/8f1e56ec-2aa7-4267-9d7d-c27af24f59e5)
+![image](https://github.com/GiSung-Song/room_reservation/assets/83264696/b17b007b-2d81-423f-8120-0045b4aec192)
