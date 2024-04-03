@@ -12,6 +12,7 @@ public enum ErrorCode {
     NOT_FOUND_MEMBER(HttpStatus.BAD_REQUEST, "회원을 찾을 수 없습니다."),
     NOT_FOUND_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "RefreshToken을 찾을 수 없습니다."),
     NOT_FOUND_COMPANY_NUMBER(HttpStatus.BAD_REQUEST, "사업자등록번호를 찾을 수 없습니다."),
+    NOT_FOUND_PRODUCT_ID(HttpStatus.BAD_REQUEST, "해당 상품을 찾을 수 없습니다."),
 
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 등록된 닉네임입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 등록된 이메일입니다."),
@@ -22,6 +23,12 @@ public enum ErrorCode {
     NOT_VALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임은 3 ~ 10자 입니다."),
     NOT_VALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 8 ~ 15자 입니다."),
     NOT_VALID_COMPANY(HttpStatus.BAD_REQUEST, "사업자 정보가 올바르지 않습니다."),
+    NOT_VALID_ADMIN(HttpStatus.BAD_REQUEST, "해당 사업자의 관리자가 아닙니다."),
+    NOT_VALID_PHONE_NUMBER(HttpStatus.BAD_REQUEST, "핸드폰 번호는 9 ~ 11자 입니다."),
+    NOT_VALID_NUMBER(HttpStatus.BAD_REQUEST, "숫자로만 입력해주세요."),
+    NOT_VALID_EMAIL(HttpStatus.BAD_REQUEST, "이메일 형식으로 입력해주세요."),
+
+    NOT_VALID_PRODUCT_NAME(HttpStatus.BAD_REQUEST, "숙소명은 30자 이하입니다."),
 
     CLOSE_COMPANY_NUMBER(HttpStatus.BAD_REQUEST, "휴업중이거나 폐업한 사업자번호입니다."),
 

@@ -3,8 +3,12 @@ package com.study.reservation.product.entity;
 import com.study.reservation.admin.entity.Admin;
 import com.study.reservation.product.etc.BooleanYNConverter;
 import com.study.reservation.product.etc.ProductType;
+import com.study.reservation.room.entity.Room;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Table
 @Entity
@@ -46,4 +50,41 @@ public class Product {
     @Convert(converter = BooleanYNConverter.class)
     @Builder.Default
     private boolean isOperate = true;
+
+    @OneToMany(mappedBy = "product")
+    private List<Room> rooms;
+
+    public void updateProductName(String productName) {
+        this.productName = productName;;
+    }
+
+    public void updateLocation(String location) {
+        this.location = location;
+    }
+
+    public void updatePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
+    public void updateIsOperate(Boolean isOperate) {
+        this.isOperate = isOperate;
+    }
+
+    public void addRoom(Room room) {
+        rooms.add(room);
+        room.setProduct(this);
+    }
+
+    public void removeRoom(Room room) {
+        rooms.remove(room);
+        room.setProduct(null);
+    }
 }

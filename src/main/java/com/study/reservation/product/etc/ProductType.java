@@ -16,6 +16,4 @@ public enum ProductType {
     RESORT("리조트");
 
     private final String korean;
-
-
 }

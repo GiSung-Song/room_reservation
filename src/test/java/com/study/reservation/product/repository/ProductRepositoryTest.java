@@ -4,13 +4,12 @@ import com.study.reservation.admin.entity.Admin;
 import com.study.reservation.config.jwt.repository.AdminRepository;
 import com.study.reservation.product.entity.Product;
 import com.study.reservation.product.etc.ProductType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class ProductRepositoryTest {
@@ -62,7 +61,6 @@ class ProductRepositoryTest {
     void 조회_테스트() {
         Admin admin = makeAdmin();
         adminRepository.save(admin);
-
 
         Product product = Product.builder()
                 .email("test@test.com")
