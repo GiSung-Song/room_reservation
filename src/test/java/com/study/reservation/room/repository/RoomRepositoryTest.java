@@ -7,6 +7,7 @@ import com.study.reservation.product.etc.ProductType;
 import com.study.reservation.product.repository.ProductRepository;
 import com.study.reservation.room.entity.Room;
 import com.study.reservation.room.etc.RoomType;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 class RoomRepositoryTest {
 
     @Autowired
-    RoomRepository repository;
+    RoomRepository roomRepository;
 
     @Autowired
     AdminRepository adminRepository;
@@ -63,6 +64,9 @@ class RoomRepositoryTest {
         Admin admin = makeAdmin();
         Product product = makeProduct(admin);
 
+        adminRepository.save(admin);
+        productRepository.save(product);
+
         Room room = Room.builder()
                 .roomNum("1024")
                 .roomType(RoomType.TWIN_ROOM)
@@ -71,7 +75,63 @@ class RoomRepositoryTest {
                 .product(product)
                 .build();
 
-        repository.save(room);
+        Room savedRoom = roomRepository.save(room);
 
+        Assertions.assertThat(savedRoom.getRoomNum()).isEqualTo(room.getRoomNum());
+        Assertions.assertThat(savedRoom.getPrice()).isEqualTo(room.getPrice());
+        Assertions.assertThat(savedRoom.getRoomType()).isEqualTo(room.getRoomType());
+    }
+
+    @Test
+    @DisplayName("조회 테스트")
+    void 조회_테스트() {
+
+        Admin admin = makeAdmin();
+        Product product = makeProduct(admin);
+
+        adminRepository.save(admin);
+        productRepository.save(product);
+
+        Room room = Room.builder()
+                .roomNum("1024")
+                .roomType(RoomType.TWIN_ROOM)
+                .price(100000)
+                .headCount(4)
+                .product(product)
+                .build();
+
+        Long savedId = roomRepository.save(room).getId();
+        Room findRoom = roomRepository.findById(savedId).get();
+
+        Assertions.assertThat(findRoom.getRoomNum()).isEqualTo(room.getRoomNum());
+        Assertions.assertThat(findRoom.getPrice()).isEqualTo(room.getPrice());
+        Assertions.assertThat(findRoom.getRoomType()).isEqualTo(room.getRoomType());
+    }
+
+    @Test
+    @DisplayName("상품ID로 조회 테스트")
+    void 상품ID로_조회_테스트() {
+
+        Admin admin = makeAdmin();
+        Product product = makeProduct(admin);
+
+        adminRepository.save(admin);
+        productRepository.save(product);
+
+        Room room = Room.builder()
+                .roomNum("1024")
+                .roomType(RoomType.TWIN_ROOM)
+                .price(100000)
+                .headCount(4)
+                .product(product)
+                .build();
+
+        roomRepository.save(room);
+
+        Room findProductRoom = roomRepository.findByProduct_Id(product.getId()).get();
+
+        Assertions.assertThat(findProductRoom.getRoomNum()).isEqualTo(room.getRoomNum());
+        Assertions.assertThat(findProductRoom.getPrice()).isEqualTo(room.getPrice());
+        Assertions.assertThat(findProductRoom.getRoomType()).isEqualTo(room.getRoomType());
     }
 }

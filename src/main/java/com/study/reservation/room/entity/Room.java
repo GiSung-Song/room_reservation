@@ -35,6 +35,9 @@ public class Room {
     @Column(nullable = false)
     private int headCount;
 
+    @Column(length = 50000)
+    private String description;
+
     public void setProduct(Product product) {
         this.product = product;
     }
