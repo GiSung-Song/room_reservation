@@ -52,7 +52,8 @@ public class Product {
     private boolean isOperate = true;
 
     @OneToMany(mappedBy = "product")
-    private List<Room> rooms;
+    @Builder.Default
+    private List<Room> rooms = new ArrayList<>();
 
     public void updateProductName(String productName) {
         this.productName = productName;;

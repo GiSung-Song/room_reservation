@@ -17,5 +17,5 @@ public class MemberInfoResDto {
     private String phoneNumber;
     private String email;
     private Membership membership;
-    private int point;
+    private Integer point;
 }

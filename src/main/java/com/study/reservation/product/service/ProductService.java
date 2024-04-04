@@ -52,7 +52,7 @@ public class ProductService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COMPANY_NUMBER));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_PRODUCT_ID));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_PRODUCT));
 
         //해당 상품의 관리자의 ID와 현재 접속된 관리자의 ID가 다를 경우
         if (product.getAdmin().getId() != admin.getId()) {

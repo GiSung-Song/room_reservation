@@ -1,6 +1,7 @@
 package com.study.reservation.room.entity;
 
 import com.study.reservation.product.entity.Product;
+import com.study.reservation.product.etc.BooleanYNConverter;
 import com.study.reservation.room.etc.RoomType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,15 +31,40 @@ public class Room {
     private RoomType roomType;
 
     @Column(nullable = false)
-    private int price;
+    private Integer price;
 
     @Column(nullable = false)
-    private int headCount;
+    private Integer headCount;
 
     @Column(length = 50000)
     private String description;
 
+    @Column(nullable = false)
+    @Convert(converter = BooleanYNConverter.class)
+    @Builder.Default
+    private Boolean isOperate = true;
+
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public void updateRoomNum(String roomNum) {
+        this.roomNum = roomNum;
+    }
+
+    public void updateHeadCount(int headCount) {
+        this.headCount = headCount;
+    }
+
+    public void updatePrice(int price) {
+        this.price = price;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateIsOperate(Boolean isOperate) {
+        this.isOperate = isOperate;
     }
 }

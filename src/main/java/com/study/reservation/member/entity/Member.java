@@ -40,7 +40,7 @@ public class Member {
 
     @Builder.Default()
     @Column(nullable = false)
-    private int point = 0;
+    private Integer point = 0;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
