@@ -128,7 +128,7 @@ class RoomRepositoryTest {
 
         roomRepository.save(room);
 
-        Room findProductRoom = roomRepository.findByProduct_Id(product.getId()).get().get(0);
+        Room findProductRoom = roomRepository.findByProduct_Id(product.getId()).get(0);
 
         Assertions.assertThat(findProductRoom.getRoomNum()).isEqualTo(room.getRoomNum());
         Assertions.assertThat(findProductRoom.getPrice()).isEqualTo(room.getPrice());

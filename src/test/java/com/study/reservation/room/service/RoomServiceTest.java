@@ -7,6 +7,7 @@ import com.study.reservation.config.jwt.repository.AdminRepository;
 import com.study.reservation.product.entity.Product;
 import com.study.reservation.product.etc.ProductType;
 import com.study.reservation.product.repository.ProductRepository;
+import com.study.reservation.room.dto.RoomDto;
 import com.study.reservation.room.dto.RoomRegisterDto;
 import com.study.reservation.room.dto.RoomUpdateDto;
 import com.study.reservation.room.entity.Room;
@@ -161,6 +162,50 @@ class RoomServiceTest {
             assertEquals(updateRoom.getIsOperate(), updateDto.getIsOperate());
             assertEquals(updateRoom.getDescription(), updateDto.getDescription());
             assertEquals(updateRoom.getHeadCount(), room.getHeadCount());
+        }
+
+        @DisplayName("수정 실패 테스트")
+        @Test
+        void 수정_실패_테스트() {
+            doThrow(new CustomException(ErrorCode.NOT_FOUND_COMPANY_NUMBER)).when(adminRepository).findByCompanyNumber(any());
+
+            String companyNumber = "1234123412";
+            RoomRegisterDto dto = makeDto();
+
+            assertThrows(CustomException.class, () -> roomService.registerRoom(dto, companyNumber));
+
+        }
+    }
+
+    @Nested
+    class info {
+
+        @DisplayName("조회 성공 테스트")
+        @Test
+        void 조회_성공_테스트() {
+            Admin admin = makeAdmin();
+            Product product = makeProduct(admin);
+            Room room = makeRoom();
+            product.addRoom(room);
+            Long fakeId = 0L;
+
+            ReflectionTestUtils.setField(room, "id", fakeId);
+
+            given(roomRepository.findById(fakeId)).willReturn(Optional.ofNullable(room));
+
+            RoomDto roomDto = roomService.infoRoom(fakeId);
+
+            assertEquals(roomDto.getDescription(), room.getDescription());
+            assertEquals(roomDto.getPrice(), room.getPrice());
+            assertEquals(roomDto.getProductName(), room.getProduct().getProductName());
+        }
+
+        @DisplayName("조회 실패 테스트")
+        @Test
+        void 조회_실패_테스트() {
+            doThrow(new CustomException(ErrorCode.NOT_FOUND_ROOM)).when(roomRepository).findById(any());
+
+            assertThrows(CustomException.class, () -> roomService.infoRoom(any()));
         }
     }
 

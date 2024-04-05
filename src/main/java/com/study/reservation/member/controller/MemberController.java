@@ -54,10 +54,11 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "개인정보를 수정했습니다."));
     }
 
-    private static String getAuthEmail() {
+    private String getAuthEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails principal = (UserDetails) authentication.getPrincipal();
         String email = principal.getUsername();
+
         return email;
     }
 }

@@ -4,15 +4,21 @@ import com.study.reservation.admin.entity.Admin;
 import com.study.reservation.config.exception.CustomException;
 import com.study.reservation.config.exception.ErrorCode;
 import com.study.reservation.config.jwt.repository.AdminRepository;
+import com.study.reservation.product.dto.ProductDto;
 import com.study.reservation.product.dto.ProductRegisterDto;
 import com.study.reservation.product.dto.ProductUpdateDto;
 import com.study.reservation.product.entity.Product;
 import com.study.reservation.product.repository.ProductRepository;
+import com.study.reservation.room.dto.RoomDto;
+import com.study.reservation.room.entity.Room;
+import com.study.reservation.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Service
@@ -21,6 +27,44 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final AdminRepository adminRepository;
+    private final RoomRepository roomRepository;
+
+    @Transactional(readOnly = true)
+    public ProductDto infoProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        List<Room> productRoom = roomRepository.findByProduct_Id(product.getId());
+
+        ProductDto productDto = new ProductDto();
+
+        productDto.setProductName(product.getProductName());
+        productDto.setProductType(product.getProductType());
+        productDto.setEmail(product.getEmail());
+        productDto.setLocation(product.getLocation());
+        productDto.setPhoneNumber(product.getPhoneNumber());
+        productDto.setDescription(product.getDescription());
+
+        List<RoomDto> roomDtoList = new ArrayList<>();
+
+        for (Room room : productRoom) {
+            RoomDto roomDto = new RoomDto();
+
+            roomDto.setProductName(product.getProductName());
+            roomDto.setRoomNum(room.getRoomNum());
+            roomDto.setRoomType(room.getRoomType());
+            roomDto.setPrice(room.getPrice());
+            roomDto.setHeadCount(room.getHeadCount());
+            roomDto.setDescription(room.getDescription());
+            roomDto.setIsOperate(room.getIsOperate());
+
+            roomDtoList.add(roomDto);
+        }
+
+        productDto.setRoomList(roomDtoList);
+
+        return productDto;
+    }
 
     @Transactional
     public Long registerProduct(ProductRegisterDto productRegisterDto, String companyNumber) {

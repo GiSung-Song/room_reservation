@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -97,6 +98,11 @@ public class SecurityConfig {
                 .httpBasic(HttpBasicConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/member**").hasRole("MEMBER")
+                        .requestMatchers(HttpMethod.GET, "/room**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/room**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/room**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/product**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/product**").hasRole("ADMIN")
                         .anyRequest().authenticated());
 
         return httpSecurity.build();

@@ -6,6 +6,7 @@ import com.study.reservation.config.exception.ErrorCode;
 import com.study.reservation.config.jwt.repository.AdminRepository;
 import com.study.reservation.product.entity.Product;
 import com.study.reservation.product.repository.ProductRepository;
+import com.study.reservation.room.dto.RoomDto;
 import com.study.reservation.room.dto.RoomRegisterDto;
 import com.study.reservation.room.dto.RoomUpdateDto;
 import com.study.reservation.room.entity.Room;
@@ -22,6 +23,23 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final ProductRepository productRepository;
     private final AdminRepository adminRepository;
+
+    @Transactional(readOnly = true)
+    public RoomDto infoRoom(Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+
+        RoomDto roomDto = new RoomDto();
+        roomDto.setRoomNum(room.getRoomNum());
+        roomDto.setRoomType(room.getRoomType());
+        roomDto.setPrice(room.getPrice());
+        roomDto.setIsOperate(room.getIsOperate());
+        roomDto.setDescription(room.getDescription());
+        roomDto.setHeadCount(room.getHeadCount());
+        roomDto.setProductName(room.getProduct().getProductName());
+
+        return roomDto;
+    }
 
     @Transactional
     public Long registerRoom(RoomRegisterDto dto, String companyNumber) {
