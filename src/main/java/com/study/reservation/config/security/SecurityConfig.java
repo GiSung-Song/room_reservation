@@ -98,11 +98,6 @@ public class SecurityConfig {
                 .httpBasic(HttpBasicConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/member**").hasRole("MEMBER")
-                        .requestMatchers(HttpMethod.GET, "/room**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/room**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/room**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/product**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/product**").hasRole("ADMIN")
                         .anyRequest().authenticated());
 
         return httpSecurity.build();

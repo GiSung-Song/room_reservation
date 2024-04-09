@@ -96,6 +96,8 @@ public class AdminSecurityConfig {
     public SecurityFilterChain securityAdminFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .securityMatcher("/admin/**")
+                .securityMatcher("/room**")
+                .securityMatcher("/product**")
                 .addFilterAfter(adminCustomUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
                 .addFilterBefore(jwtAdminAuthenticationFilter(), AdminCustomUsernamePasswordAuthenticationFilter.class)
                 .csrf(CsrfConfigurer::disable)
@@ -109,6 +111,11 @@ public class AdminSecurityConfig {
                 .httpBasic(HttpBasicConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/room**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/room**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/product**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/product**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/product**").permitAll()
                         .requestMatchers("/admin/join").permitAll());
 
         return httpSecurity.build();

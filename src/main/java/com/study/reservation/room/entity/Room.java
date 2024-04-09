@@ -1,10 +1,14 @@
 package com.study.reservation.room.entity;
 
+import com.study.reservation.order.entity.Order;
 import com.study.reservation.product.entity.Product;
 import com.study.reservation.product.etc.BooleanYNConverter;
 import com.study.reservation.room.etc.RoomType;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table
@@ -44,6 +48,10 @@ public class Room {
     @Builder.Default
     private Boolean isOperate = true;
 
+    @OneToMany(mappedBy = "room")
+    @Builder.Default
+    private List<Order> orders = new ArrayList<>();
+
     public void setProduct(Product product) {
         this.product = product;
     }
@@ -58,6 +66,11 @@ public class Room {
 
     public void updatePrice(int price) {
         this.price = price;
+    }
+
+    public void addOrder(Order order) {
+        orders.add(order);
+        order.setRoom(this);
     }
 
     public void updateDescription(String description) {

@@ -1,12 +1,12 @@
 package com.study.reservation.product.service;
 
 import com.study.reservation.admin.entity.Admin;
+import com.study.reservation.config.etc.SearchCondition;
 import com.study.reservation.config.exception.CustomException;
 import com.study.reservation.config.exception.ErrorCode;
 import com.study.reservation.config.jwt.repository.AdminRepository;
-import com.study.reservation.product.dto.ProductDto;
-import com.study.reservation.product.dto.ProductRegisterDto;
-import com.study.reservation.product.dto.ProductUpdateDto;
+import com.study.reservation.config.repository.CommonQueryRepository;
+import com.study.reservation.product.dto.*;
 import com.study.reservation.product.entity.Product;
 import com.study.reservation.product.repository.ProductRepository;
 import com.study.reservation.room.dto.RoomDto;
@@ -28,6 +28,27 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final AdminRepository adminRepository;
     private final RoomRepository roomRepository;
+    private final CommonQueryRepository commonQueryRepository;
+
+    @Transactional(readOnly = true)
+    public List<ProductListDto> getProductList(SearchCondition searchCondition) {
+        List<ProductListDto> dtoList = new ArrayList<>();
+
+        List<Room> roomList = commonQueryRepository.searchRoom(searchCondition);
+
+        for (Room room : roomList) {
+            ProductListDto dto = new ProductListDto();
+
+            dto.setProductId(room.getProduct().getId());
+            dto.setProductName(room.getProduct().getProductName());
+            dto.setLocation(room.getProduct().getLocation());
+            dto.setLowPrice(room.getPrice());
+
+            dtoList.add(dto);
+        }
+
+        return dtoList;
+    }
 
     @Transactional(readOnly = true)
     public ProductDto infoProduct(Long productId) {

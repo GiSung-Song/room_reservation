@@ -2,8 +2,12 @@ package com.study.reservation.member.entity;
 
 import com.study.reservation.config.etc.Role;
 import com.study.reservation.member.etc.Membership;
+import com.study.reservation.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Table
 @Entity
@@ -47,11 +51,20 @@ public class Member {
     @Column(nullable = false)
     private Role role = Role.MEMBER;
 
+    @OneToMany(mappedBy = "member")
+    @Builder.Default
+    private List<Order> orders = new ArrayList<>();
+
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void addOrder(Order order) {
+        orders.add(order);
+        order.setMember(this);
     }
 }

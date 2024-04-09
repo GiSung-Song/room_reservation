@@ -1,14 +1,19 @@
 package com.study.reservation.product.service;
 
 import com.study.reservation.admin.entity.Admin;
+import com.study.reservation.config.etc.SearchCondition;
 import com.study.reservation.config.exception.CustomException;
 import com.study.reservation.config.exception.ErrorCode;
 import com.study.reservation.config.jwt.repository.AdminRepository;
+import com.study.reservation.config.repository.CommonQueryRepository;
+import com.study.reservation.product.dto.ProductListDto;
 import com.study.reservation.product.dto.ProductRegisterDto;
 import com.study.reservation.product.dto.ProductUpdateDto;
 import com.study.reservation.product.entity.Product;
 import com.study.reservation.product.etc.ProductType;
 import com.study.reservation.product.repository.ProductRepository;
+import com.study.reservation.room.entity.Room;
+import com.study.reservation.room.etc.RoomType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,13 +24,14 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
@@ -39,6 +45,9 @@ class ProductServiceTest {
 
     @Mock
     private AdminRepository adminRepository;
+
+    @Mock
+    private CommonQueryRepository queryRepository;
 
     Admin setAdmin() {
         return Admin.builder()
@@ -144,6 +153,37 @@ class ProductServiceTest {
 
             assertThrows(CustomException.class, () -> productService.updateProduct(any(), any(), any()));
         }
+    }
+
+    @Test
+    @DisplayName("조건에 맞는 데이터 찾기")
+    void 조건_객실_찾기() {
+        SearchCondition searchCondition = new SearchCondition();
+        searchCondition.setHighPrice(1000000);
+        searchCondition.setLowPrice(5000);
+        searchCondition.setCount(4);
+        searchCondition.setEndDate("20240409");
+        searchCondition.setStartDate("20240401");
+        searchCondition.setLocation("");
+        searchCondition.setProductName("");
+
+        Admin admin = setAdmin();
+        Product product = setProduct(admin);
+
+        Room room = Room.builder()
+                .roomType(RoomType.DUPLEX_ROOM)
+                .headCount(200)
+                .price(20000)
+                .product(product)
+                .build();
+
+        when(queryRepository.searchRoom(searchCondition)).thenReturn(List.of(room));
+
+        List<ProductListDto> productList = productService.getProductList(searchCondition);
+
+        assertNotNull(productList);
+        assertFalse(productList.isEmpty());
+        assertEquals(productList.get(0).getProductName(), product.getProductName());
     }
 
 }
