@@ -29,8 +29,10 @@ public enum ErrorCode {
     NOT_VALID_NUMBER(HttpStatus.BAD_REQUEST, "숫자로만 입력해주세요."),
     NOT_VALID_EMAIL(HttpStatus.BAD_REQUEST, "이메일 형식으로 입력해주세요."),
     NOT_VALID_ROOM_NUM(HttpStatus.BAD_REQUEST, "숙소명은 최대 30자 입니다."),
-
     NOT_VALID_PRODUCT_NAME(HttpStatus.BAD_REQUEST, "숙소명은 30자 이하입니다."),
+
+    NOT_VALID_REQUEST_HEAD_COUNT(HttpStatus.BAD_REQUEST, "객실의 수용인원보다 많은 인원은 허용되지 않습니다."),
+    NOT_VALID_REQUEST_ROOM_ORDER(HttpStatus.BAD_REQUEST, "이미 해당 날짜의 예약이 되어있습니다."),
 
     CLOSE_COMPANY_NUMBER(HttpStatus.BAD_REQUEST, "휴업중이거나 폐업한 사업자번호입니다."),
 

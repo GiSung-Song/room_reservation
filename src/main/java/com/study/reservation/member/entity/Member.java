@@ -42,9 +42,13 @@ public class Member {
     @Column(nullable = false)
     private Membership membership = Membership.BRONZE;
 
-    @Builder.Default()
+    @Builder.Default
     @Column(nullable = false)
     private Integer point = 0;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer accPoint = 0;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default

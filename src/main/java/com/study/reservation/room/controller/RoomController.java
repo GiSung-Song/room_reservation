@@ -50,6 +50,14 @@ public class RoomController {
         return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "객실 정보 수정을 완료했습니다."));
     }
 
+    @Operation(summary = "숙소 내 객실 상세 조회", description = "해당 상품의 객실을 상세조회한다.")
+    @GetMapping("/product/{productId}/rooms/{roomId}")
+    public ResponseEntity<ApiResponse<RoomDto>> getProductRoom(@PathVariable Long productId, @PathVariable Long roomId) {
+        RoomDto room = roomService.infoRoom(roomId);
+
+        return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "객실 정보 조회를 완료했습니다.", room));
+    }
+
     private String getAuthCompanyNumber() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails principal = (UserDetails) authentication.getPrincipal();

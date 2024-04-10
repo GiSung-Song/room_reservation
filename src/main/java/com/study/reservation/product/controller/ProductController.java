@@ -2,6 +2,7 @@ package com.study.reservation.product.controller;
 
 import com.study.reservation.config.etc.SearchCondition;
 import com.study.reservation.config.response.ApiResponse;
+import com.study.reservation.product.dto.ProductDto;
 import com.study.reservation.product.dto.ProductListDto;
 import com.study.reservation.product.dto.ProductRegisterDto;
 import com.study.reservation.product.dto.ProductUpdateDto;
@@ -53,8 +54,10 @@ public class ProductController {
 
     @Operation(summary = "숙소 조회", description = "숙소를 상세 조회한다.")
     @GetMapping("/product/{id}")
-    public ResponseEntity<ApiResponse<String>> getProductInfo(@PathVariable("id") Long productId) {
-        return null;
+    public ResponseEntity<ApiResponse<ProductDto>> getProductInfo(@PathVariable("id") Long productId) {
+        ProductDto productDto = productService.infoProduct(productId);
+
+        return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "해당 숙소의 객실을 조회했습니다.", productDto));
     }
 
     @Operation(summary = "숙소 등록", description = "숙소를 등록한다.")
