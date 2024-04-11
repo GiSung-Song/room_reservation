@@ -1,6 +1,7 @@
 package com.study.reservation.member.controller;
 
 import com.study.reservation.config.response.ApiResponse;
+import com.study.reservation.config.util.CommonUtils;
 import com.study.reservation.member.dto.MemberInfoResDto;
 import com.study.reservation.member.dto.MemberSignUpDto;
 import com.study.reservation.member.dto.MemberUpdateReqDto;
@@ -25,6 +26,7 @@ public class MemberController {
 
     private final HttpStatus HTTP_STATUS_OK = HttpStatus.OK;
     private final MemberService memberService;
+    private final CommonUtils commonUtils;
 
     @Operation(summary = "회원가입", description = "회원가입을 진행한다.")
     @PostMapping("/join")
@@ -37,7 +39,7 @@ public class MemberController {
     @Operation(summary = "개인정보", description = "개인정보를 조회한다.")
     @GetMapping("/member")
     public ResponseEntity<ApiResponse<MemberInfoResDto>> getInfo() {
-        String email = getAuthEmail();
+        String email = commonUtils.getAuthUsername();
 
         MemberInfoResDto memberInfo = memberService.getMemberInfo(email);
 
@@ -47,18 +49,11 @@ public class MemberController {
     @Operation(summary = "개인정보 수정", description = "개인정보를 수정한다.")
     @PatchMapping("/member")
     public ResponseEntity<ApiResponse<String>> updateMember(@RequestBody MemberUpdateReqDto memberUpdateReqDto) {
-        String email = getAuthEmail();
+        String email = commonUtils.getAuthUsername();
 
         memberService.updateMember(email, memberUpdateReqDto);
 
         return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "개인정보를 수정했습니다."));
     }
 
-    private String getAuthEmail() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails principal = (UserDetails) authentication.getPrincipal();
-        String email = principal.getUsername();
-
-        return email;
-    }
 }

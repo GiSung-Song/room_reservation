@@ -6,6 +6,7 @@ import com.study.reservation.config.repository.CommonQueryRepository;
 import com.study.reservation.member.entity.Member;
 import com.study.reservation.member.repository.MemberRepository;
 import com.study.reservation.order.dto.OrderDto;
+import com.study.reservation.order.dto.OrderResDto;
 import com.study.reservation.order.entity.Order;
 import com.study.reservation.order.repository.OrderRepository;
 import com.study.reservation.room.entity.Room;
@@ -13,6 +14,9 @@ import com.study.reservation.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +28,8 @@ public class OrderService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void order(Long roomId, String email, OrderDto orderDto) {
-        Room room = roomRepository.findById(roomId)
+    public void order(String email, OrderDto orderDto) {
+        Room room = roomRepository.findById(orderDto.getRoomId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
 
         Member member = memberRepository.findByEmail(email)
@@ -36,7 +40,7 @@ public class OrderService {
             throw new CustomException(ErrorCode.NOT_VALID_REQUEST_HEAD_COUNT);
         }
 
-        boolean isRoomOrdered = queryRepository.isRoomOrder(roomId, orderDto);
+        boolean isRoomOrdered = queryRepository.isRoomOrder(orderDto.getRoomId(), orderDto);
 
         //이미 해당 날짜의 예약이 되어있는 경우
         if (isRoomOrdered) {
@@ -49,10 +53,42 @@ public class OrderService {
                 .price(room.getPrice())
                 .build();
 
+        //연관관계 세팅
         member.addOrder(order);
         room.addOrder(order);
 
         orderRepository.save(order);
+    }
+
+    @Transactional(readOnly = true)
+    public OrderResDto getOrderInfo(Long orderId, String email) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ORDER));
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        if (order.getMember().getId() != member.getId()) {
+            throw new CustomException(ErrorCode.NOT_ACCEPT_GET_INFO_MEMBER);
+        }
+
+        return OrderResDto.toDto(order);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderResDto> getOrderList(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        List<Order> orders = member.getOrders();
+
+        List<OrderResDto> orderList = new ArrayList<>();
+
+        for (Order order : orders) {
+            orderList.add(OrderResDto.toDto(order));
+        }
+
+        return orderList;
     }
 
 }

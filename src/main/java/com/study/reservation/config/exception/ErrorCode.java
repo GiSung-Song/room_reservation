@@ -14,6 +14,7 @@ public enum ErrorCode {
     NOT_FOUND_COMPANY_NUMBER(HttpStatus.BAD_REQUEST, "사업자등록번호를 찾을 수 없습니다."),
     NOT_FOUND_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품을 찾을 수 없습니다."),
     NOT_FOUND_ROOM(HttpStatus.BAD_REQUEST, "해당 객실을 찾을 수 없습니다."),
+    NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, "해당 예약(주문)을 찾을 수 없습니다."),
 
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 등록된 닉네임입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 등록된 이메일입니다."),
@@ -37,6 +38,8 @@ public enum ErrorCode {
     CLOSE_COMPANY_NUMBER(HttpStatus.BAD_REQUEST, "휴업중이거나 폐업한 사업자번호입니다."),
 
     OPEN_API_INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "OPEN API 요청 중 오류가 발생하였습니다."),
+
+    NOT_ACCEPT_GET_INFO_MEMBER(HttpStatus.UNAUTHORIZED, "해당 사용자가 아닙니다."),
 
     ;
 

@@ -7,6 +7,7 @@ import com.study.reservation.member.dto.MemberSignUpDto;
 import com.study.reservation.member.entity.Member;
 import com.study.reservation.member.repository.MemberRepository;
 import com.study.reservation.order.dto.OrderDto;
+import com.study.reservation.order.dto.OrderResDto;
 import com.study.reservation.order.entity.Order;
 import com.study.reservation.order.repository.OrderRepository;
 import com.study.reservation.product.entity.Product;
@@ -22,8 +23,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,6 +95,14 @@ class OrderServiceTest {
         return member;
     }
 
+    private Order makeOrder() {
+        return Order.builder()
+                .startDate("20240401")
+                .endDate("20240401")
+                .price(200000)
+                .build();
+    }
+
     @Test
     @DisplayName("예약 성공 테스트")
     void 예약_성공_테스트() {
@@ -104,12 +115,13 @@ class OrderServiceTest {
         orderDto.setStartDate("20241010");
         orderDto.setEndDate("20241012");
         orderDto.setHeadCount(2);
+        orderDto.setRoomId(roomId);
 
         when(roomRepository.findById(roomId)).thenReturn(Optional.ofNullable(room));
         when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.ofNullable(member));
         when(queryRepository.isRoomOrder(roomId, orderDto)).thenReturn(false);
 
-        Assertions.assertDoesNotThrow(() -> orderService.order(roomId, member.getEmail(), orderDto));
+        assertDoesNotThrow(() -> orderService.order(member.getEmail(), orderDto));
 
         verify(orderRepository, times(1)).save(any(Order.class));
     }
@@ -126,13 +138,100 @@ class OrderServiceTest {
         orderDto.setStartDate("20241010");
         orderDto.setEndDate("20241012");
         orderDto.setHeadCount(10);
+        orderDto.setRoomId(roomId);
 
         when(roomRepository.findById(roomId)).thenReturn(Optional.ofNullable(room));
         when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.ofNullable(member));
 
-        Assertions.assertThrows(CustomException.class, () -> orderService.order(roomId, member.getEmail(), orderDto));
+        assertThrows(CustomException.class, () -> orderService.order(member.getEmail(), orderDto));
 
         verify(orderRepository, never()).save(any(Order.class));
     }
 
+    @Test
+    @DisplayName("예약 조회 성공 테스트")
+    void 예약_조회_성공_테스트() {
+        Admin admin = makeAdmin();
+        Product product = makeProduct(admin);
+        Member member = makeMember();
+        Room room = makeRoom();
+        product.addRoom(room);
+        Order order = makeOrder();
+        order.setMember(member);
+        order.setRoom(room);
+        Long fakeId = 1L;
+
+        when(orderRepository.findById(fakeId)).thenReturn(Optional.ofNullable(order));
+        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.ofNullable(member));
+
+        OrderResDto orderInfo = orderService.getOrderInfo(fakeId, member.getEmail());
+
+        assertNotNull(orderInfo);
+
+        assertEquals(orderInfo.getPrice(), room.getPrice());
+    }
+
+    @Test
+    @DisplayName("예약 조회 실패 테스트")
+    void 예약_조회_실패_테스트1() {
+        Admin admin = makeAdmin();
+        Product product = makeProduct(admin);
+        Member member = makeMember();
+        Room room = makeRoom();
+        product.addRoom(room);
+        Order order = makeOrder();
+        order.setMember(member);
+        order.setRoom(room);
+        Long fakeId = 1L;
+
+        when(orderRepository.findById(fakeId)).thenReturn(Optional.empty());
+
+        assertThrows(CustomException.class, () -> orderService.getOrderInfo(fakeId, member.getEmail()));
+    }
+
+    @Test
+    @DisplayName("예약 조회 실패 테스트")
+    void 예약_조회_실패_테스트2() {
+        Admin admin = makeAdmin();
+        Product product = makeProduct(admin);
+        Member member = makeMember();
+        Room room = makeRoom();
+        product.addRoom(room);
+        Order order = makeOrder();
+        member.addOrder(order);
+        room.addOrder(order);
+        Long fakeId = 1L;
+
+        when(orderRepository.findById(fakeId)).thenReturn(Optional.ofNullable(order));
+        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.empty());
+
+        assertThrows(CustomException.class, () -> orderService.getOrderInfo(fakeId, member.getEmail()));
+    }
+
+    @Test
+    @DisplayName("예약 내역 조회 테스트")
+    void 예약_내역_조회_테스트() {
+        Admin admin = makeAdmin();
+        Product product = makeProduct(admin);
+        Member member = makeMember();
+        Room room = makeRoom();
+        product.addRoom(room);
+
+        Order order = makeOrder();
+        member.addOrder(order);
+        room.addOrder(order);
+
+        Order order2 = makeOrder();
+        member.addOrder(order2);
+        room.addOrder(order2);
+
+        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.ofNullable(member));
+
+        List<OrderResDto> orderList = orderService.getOrderList(member.getEmail());
+
+        assertNotNull(orderList);
+        assertEquals(2, orderList.size());
+        assertEquals(order.getPrice(), orderList.get(0).getPrice());
+        assertEquals(order2.getPrice(), orderList.get(1).getPrice());
+    }
 }

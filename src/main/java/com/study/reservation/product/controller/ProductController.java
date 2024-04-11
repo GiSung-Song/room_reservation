@@ -2,6 +2,7 @@ package com.study.reservation.product.controller;
 
 import com.study.reservation.config.etc.SearchCondition;
 import com.study.reservation.config.response.ApiResponse;
+import com.study.reservation.config.util.CommonUtils;
 import com.study.reservation.product.dto.ProductDto;
 import com.study.reservation.product.dto.ProductListDto;
 import com.study.reservation.product.dto.ProductRegisterDto;
@@ -26,6 +27,7 @@ public class ProductController {
 
     private final HttpStatus HTTP_STATUS_OK = HttpStatus.OK;
     private final ProductService productService;
+    private final CommonUtils commonUtils;
 
     @Operation(summary = "숙소 검색", description = "숙소를 검색한다.")
     @GetMapping("/product")
@@ -63,7 +65,7 @@ public class ProductController {
     @Operation(summary = "숙소 등록", description = "숙소를 등록한다.")
     @PostMapping("/product")
     public ResponseEntity<ApiResponse<String>> registerProduct(ProductRegisterDto productRegisterDto) {
-        String companyNumber = getAuthCompanyNumber();
+        String companyNumber = commonUtils.getAuthUsername();
 
         productService.registerProduct(productRegisterDto, companyNumber);
 
@@ -73,18 +75,11 @@ public class ProductController {
     @Operation(summary = "숙소 정보 수정", description = "숙소 정보를 수정한다.")
     @PatchMapping("/product/{id}")
     public ResponseEntity<ApiResponse<String>> updateProduct(@PathVariable("id") Long productId, ProductUpdateDto productUpdateDto) {
-        String companyNumber = getAuthCompanyNumber();
+        String companyNumber = commonUtils.getAuthUsername();
 
         productService.updateProduct(productUpdateDto, companyNumber, productId);
 
         return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "숙소 정보를 수정했습니다."));
     }
 
-    private String getAuthCompanyNumber() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails principal = (UserDetails) authentication.getPrincipal();
-        String companyNumber = principal.getUsername();
-
-        return companyNumber;
-    }
 }

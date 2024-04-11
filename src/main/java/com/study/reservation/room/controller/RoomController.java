@@ -1,6 +1,7 @@
 package com.study.reservation.room.controller;
 
 import com.study.reservation.config.response.ApiResponse;
+import com.study.reservation.config.util.CommonUtils;
 import com.study.reservation.room.dto.RoomDto;
 import com.study.reservation.room.dto.RoomRegisterDto;
 import com.study.reservation.room.dto.RoomUpdateDto;
@@ -22,11 +23,12 @@ public class RoomController {
 
     private final HttpStatus HTTP_STATUS_OK = HttpStatus.OK;
     private final RoomService roomService;
+    private final CommonUtils commonUtils;
 
     @Operation(summary = "객실 등록", description = "객실을 등록한다.")
     @PostMapping("/room")
     public ResponseEntity<ApiResponse<String>> registerRoom(RoomRegisterDto roomRegisterDto) {
-        String companyNumber = getAuthCompanyNumber();
+        String companyNumber = commonUtils.getAuthUsername();
 
         roomService.registerRoom(roomRegisterDto, companyNumber);
 
@@ -44,7 +46,7 @@ public class RoomController {
     @Operation(summary = "객실 정보 수정", description = "객실 정보를 수정한다.")
     @PatchMapping("/room/{id}")
     public ResponseEntity<ApiResponse<String>> updateRoom(@PathVariable("id") Long roomId, RoomUpdateDto roomUpdateDto) {
-        String companyNumber = getAuthCompanyNumber();
+        String companyNumber = commonUtils.getAuthUsername();
         roomService.updateRoom(roomUpdateDto, roomId, companyNumber);
 
         return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "객실 정보 수정을 완료했습니다."));
@@ -58,11 +60,4 @@ public class RoomController {
         return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "객실 정보 조회를 완료했습니다.", room));
     }
 
-    private String getAuthCompanyNumber() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails principal = (UserDetails) authentication.getPrincipal();
-        String companyNumber = principal.getUsername();
-
-        return companyNumber;
-    }
 }

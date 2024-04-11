@@ -9,6 +9,10 @@ import org.hibernate.validator.constraints.Length;
 @Schema(description = "주문정보 Request Dto")
 public class OrderDto {
 
+    @Schema(description = "객실 ID", example = "1")
+    @NotBlank(message = "객실 ID는 필수 입력 값 입니다.")
+    private Long roomId;
+
     @Schema(description = "인원", example = "2")
     @NotBlank(message = "인원은 필수 입력 값 입니다.")
     private Integer headCount;
