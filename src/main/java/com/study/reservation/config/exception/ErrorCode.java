@@ -15,6 +15,7 @@ public enum ErrorCode {
     NOT_FOUND_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품을 찾을 수 없습니다."),
     NOT_FOUND_ROOM(HttpStatus.BAD_REQUEST, "해당 객실을 찾을 수 없습니다."),
     NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, "해당 예약(주문)을 찾을 수 없습니다."),
+    NOT_FOUND_CREDIT(HttpStatus.BAD_REQUEST, "해당 결제정보를 찾지 못했습니다."),
 
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 등록된 닉네임입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 등록된 이메일입니다."),
@@ -32,6 +33,8 @@ public enum ErrorCode {
     NOT_VALID_ROOM_NUM(HttpStatus.BAD_REQUEST, "숙소명은 최대 30자 입니다."),
     NOT_VALID_PRODUCT_NAME(HttpStatus.BAD_REQUEST, "숙소명은 30자 이하입니다."),
 
+    NOT_VALID_REFUND_DAY(HttpStatus.BAD_REQUEST, "당일부터는 환불이 불가능합니다."),
+
     NOT_VALID_REQUEST_HEAD_COUNT(HttpStatus.BAD_REQUEST, "객실의 수용인원보다 많은 인원은 허용되지 않습니다."),
     NOT_VALID_REQUEST_ROOM_ORDER(HttpStatus.BAD_REQUEST, "이미 해당 날짜의 예약이 되어있습니다."),
 
@@ -40,6 +43,8 @@ public enum ErrorCode {
     OPEN_API_INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "OPEN API 요청 중 오류가 발생하였습니다."),
 
     NOT_ACCEPT_GET_INFO_MEMBER(HttpStatus.UNAUTHORIZED, "해당 사용자가 아닙니다."),
+
+    NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "보유 포인트보다 작게 입력해주세요."),
 
     ;
 

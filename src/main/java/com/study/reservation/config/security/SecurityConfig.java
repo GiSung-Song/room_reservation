@@ -98,6 +98,7 @@ public class SecurityConfig {
                 .httpBasic(HttpBasicConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/member**").hasRole("MEMBER")
+                        .requestMatchers("/orders**").hasAnyRole("MEMBER", "ADMIN")
                         .anyRequest().authenticated());
 
         return httpSecurity.build();

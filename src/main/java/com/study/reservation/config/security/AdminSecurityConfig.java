@@ -113,6 +113,7 @@ public class AdminSecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/room**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/room**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/room**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/product**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/product**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/product**").permitAll()

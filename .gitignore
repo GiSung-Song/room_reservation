@@ -40,3 +40,4 @@ out/
 application-jwt.yml
 application-mysql.yml
 application-openapi.yml
+application-payment.yml

@@ -71,4 +71,38 @@ public class Member {
         orders.add(order);
         order.setMember(this);
     }
+
+    public void savePoint(Integer point) {
+        this.point += point;
+        this.accPoint += point;
+    }
+
+    public void refundPoint(Integer point) {
+        this.point += point;
+    }
+
+    public void cancelSavePoint(Integer point) {
+        this.point -= point;
+        this.accPoint -= point;
+    }
+
+    public void usePoint(Integer point) {
+        this.point -= point;
+    }
+
+    public void updateMembership() {
+        if (accPoint < 10000) {
+            setMembership(Membership.BRONZE);
+        } else if (accPoint < 20000) {
+            setMembership(Membership.SILVER);
+        } else if (accPoint < 30000) {
+            setMembership(Membership.GOLD);
+        } else if (accPoint < 50000) {
+            setMembership(Membership.PLATINUM);
+        }
+    }
+
+    private void setMembership(Membership membership) {
+        this.membership = membership;
+    }
 }

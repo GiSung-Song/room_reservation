@@ -1,6 +1,7 @@
 package com.study.reservation.order.entity;
 
 import com.study.reservation.member.entity.Member;
+import com.study.reservation.order.etc.OrderStatus;
 import com.study.reservation.room.entity.Room;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,12 +36,21 @@ public class Order {
     @Column(nullable = false)
     private String endDate;
 
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    @Builder.Default
+    private OrderStatus orderStatus = OrderStatus.EMPTY_ORDER;
+
     public void setRoom(Room room) {
         this.room = room;
     }
 
     public void setMember(Member member) {
         this.member = member;
+    }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
     }
 
 }

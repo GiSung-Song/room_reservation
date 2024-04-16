@@ -8,6 +8,7 @@ import com.study.reservation.member.repository.MemberRepository;
 import com.study.reservation.order.dto.OrderDto;
 import com.study.reservation.order.dto.OrderResDto;
 import com.study.reservation.order.entity.Order;
+import com.study.reservation.order.etc.OrderStatus;
 import com.study.reservation.order.repository.OrderRepository;
 import com.study.reservation.room.entity.Room;
 import com.study.reservation.room.repository.RoomRepository;
@@ -51,6 +52,7 @@ public class OrderService {
                 .startDate(orderDto.getStartDate())
                 .endDate(orderDto.getEndDate())
                 .price(room.getPrice())
+                .orderStatus(OrderStatus.READY_CREDIT)
                 .build();
 
         //연관관계 세팅
@@ -89,6 +91,23 @@ public class OrderService {
         }
 
         return orderList;
+    }
+
+    @Transactional
+    public OrderResDto cancelOrder(Long orderId, String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ORDER));
+
+        if (member.getId() != order.getMember().getId()) {
+            throw new CustomException(ErrorCode.NOT_ACCEPT_GET_INFO_MEMBER);
+        }
+
+        order.setOrderStatus(OrderStatus.CANCEL_ORDER);
+
+        return OrderResDto.toDto(order);
     }
 
 }

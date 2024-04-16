@@ -28,6 +28,8 @@ public class QOrder extends EntityPathBase<Order> {
 
     public final com.study.reservation.member.entity.QMember member;
 
+    public final EnumPath<com.study.reservation.order.etc.OrderStatus> orderStatus = createEnum("orderStatus", com.study.reservation.order.etc.OrderStatus.class);
+
     public final NumberPath<Integer> price = createNumber("price", Integer.class);
 
     public final com.study.reservation.room.entity.QRoom room;

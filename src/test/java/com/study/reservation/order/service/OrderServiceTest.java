@@ -9,6 +9,7 @@ import com.study.reservation.member.repository.MemberRepository;
 import com.study.reservation.order.dto.OrderDto;
 import com.study.reservation.order.dto.OrderResDto;
 import com.study.reservation.order.entity.Order;
+import com.study.reservation.order.etc.OrderStatus;
 import com.study.reservation.order.repository.OrderRepository;
 import com.study.reservation.product.entity.Product;
 import com.study.reservation.product.etc.ProductType;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -233,5 +235,30 @@ class OrderServiceTest {
         assertEquals(2, orderList.size());
         assertEquals(order.getPrice(), orderList.get(0).getPrice());
         assertEquals(order2.getPrice(), orderList.get(1).getPrice());
+    }
+
+    @Test
+    @DisplayName("예약 취소 테스트")
+    void 예약_취소_테스트() {
+        Admin admin = makeAdmin();
+        Product product = makeProduct(admin);
+        Member member = makeMember();
+        Room room = makeRoom();
+        product.addRoom(room);
+
+        Order order = makeOrder();
+        member.addOrder(order);
+        room.addOrder(order);
+
+        Long fakeId = 1L;
+        ReflectionTestUtils.setField(order, "id", fakeId);
+
+        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.ofNullable(member));
+        when(orderRepository.findById(fakeId)).thenReturn(Optional.ofNullable(order));
+
+        OrderResDto orderResDto = orderService.cancelOrder(fakeId, member.getEmail());
+
+        assertEquals(orderResDto.getProductName(), order.getRoom().getProduct().getProductName());
+        assertEquals(orderResDto.getOrderStatus(), OrderStatus.CANCEL_ORDER);
     }
 }

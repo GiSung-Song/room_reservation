@@ -1,6 +1,7 @@
 package com.study.reservation.order.dto;
 
 import com.study.reservation.order.entity.Order;
+import com.study.reservation.order.etc.OrderStatus;
 import com.study.reservation.room.etc.RoomType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class OrderResDto {
     private Integer price;
     private String startDate;
     private String endDate;
+    private OrderStatus orderStatus;
 
     public static OrderResDto toDto(Order order) {
         OrderResDto dto = new OrderResDto();
@@ -33,6 +35,7 @@ public class OrderResDto {
         dto.setPrice(order.getPrice());
         dto.setStartDate(order.getStartDate());
         dto.setEndDate(order.getEndDate());
+        dto.setOrderStatus(order.getOrderStatus());
 
         return dto;
     }

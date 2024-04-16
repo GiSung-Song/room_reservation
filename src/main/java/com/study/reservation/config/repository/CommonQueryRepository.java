@@ -5,6 +5,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.reservation.config.etc.SearchCondition;
 import com.study.reservation.order.dto.OrderDto;
+import com.study.reservation.order.etc.OrderStatus;
 import com.study.reservation.room.entity.Room;
 import org.springframework.stereotype.Repository;
 
@@ -33,16 +34,22 @@ public class CommonQueryRepository {
                 .leftJoin(room.product).fetchJoin()
                 .where(
                         room.id.notIn(
-                            JPAExpressions.select(order.room.id)
-                                .from(order)
-                                .where(order.startDate.loe(condition.getEndDate()))
-                                .where(order.endDate.goe(condition.getStartDate()))
-                ),
-                    room.headCount.goe(condition.getCount()),
-                    room.price.between(condition.getLowPrice(), condition.getHighPrice()),
-                    room.price.eq(subQuery),
-                    room.product.productName.like("%" + condition.getProductName() + "%"),
-                    room.product.location.like("%" + condition.getLocation() + "%")
+                                JPAExpressions.select(order.room.id)
+                                        .from(order)
+                                        .where(
+                                                order.startDate.between(condition.getStartDate(), condition.getEndDate())
+                                                        .or(order.endDate.between(condition.getStartDate(), condition.getEndDate()))
+                                        )
+                                        .where(
+                                                order.orderStatus.eq(OrderStatus.CANCEL_ORDER)
+                                                        .or(order.orderStatus.eq(OrderStatus.EMPTY_ORDER))
+                                        )
+                        ),
+                        room.headCount.goe(condition.getCount()),
+                        room.price.between(condition.getLowPrice(), condition.getHighPrice()),
+                        room.price.eq(subQuery),
+                        room.product.productName.like("%" + condition.getProductName() + "%"),
+                        room.product.location.like("%" + condition.getLocation() + "%")
                 )
                 .groupBy(room.product.id)
                 .orderBy(room.product.id.asc())
