@@ -16,6 +16,7 @@ public enum ErrorCode {
     NOT_FOUND_ROOM(HttpStatus.BAD_REQUEST, "해당 객실을 찾을 수 없습니다."),
     NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, "해당 예약(주문)을 찾을 수 없습니다."),
     NOT_FOUND_CREDIT(HttpStatus.BAD_REQUEST, "해당 결제정보를 찾지 못했습니다."),
+    NOT_FOUND_REVIEW(HttpStatus.BAD_REQUEST, "해당 리뷰를 찾지 못했습니다."),
 
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 등록된 닉네임입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 등록된 이메일입니다."),
@@ -43,6 +44,7 @@ public enum ErrorCode {
     OPEN_API_INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "OPEN API 요청 중 오류가 발생하였습니다."),
 
     NOT_ACCEPT_GET_INFO_MEMBER(HttpStatus.UNAUTHORIZED, "해당 사용자가 아닙니다."),
+    NOT_ACCEPT_WRITE_REVIEW(HttpStatus.BAD_REQUEST, "리뷰를 작성할 수 없습니다. ex) 예약한 적이 없는 경우"),
 
     NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "보유 포인트보다 작게 입력해주세요."),
 

@@ -52,7 +52,6 @@ public class CreditController {
     @PostMapping("/orders/{id}/refund")
     public ResponseEntity<ApiResponse<KakaoCancelResponseDto>> refundCredit(@PathVariable("id") Long orderId) {
         String email = commonUtils.getAuthUsername();
-
         KakaoCancelResponseDto kakaoCancelResponseDto = creditService.refundPay(orderId, email);
 
         return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "카카오페이 결제가 환불 되었습니다.", kakaoCancelResponseDto));

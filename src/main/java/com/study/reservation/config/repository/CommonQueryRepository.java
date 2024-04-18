@@ -1,17 +1,27 @@
 package com.study.reservation.config.repository;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.SubQueryExpression;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.reservation.config.etc.SearchCondition;
+import com.study.reservation.member.entity.QMember;
 import com.study.reservation.order.dto.OrderDto;
 import com.study.reservation.order.etc.OrderStatus;
+import com.study.reservation.product.entity.QProduct;
 import com.study.reservation.room.entity.Room;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.function.Supplier;
 
+import static com.study.reservation.member.entity.QMember.*;
 import static com.study.reservation.order.entity.QOrder.order;
+import static com.study.reservation.product.entity.QProduct.*;
 import static com.study.reservation.room.entity.QRoom.room;
 
 @Repository
@@ -68,4 +78,37 @@ public class CommonQueryRepository {
         return count > 0;
     }
 
+    public boolean isPossibleWriteReview(Long memberId, Long productId) {
+        Long count = jpaQueryFactory
+                .select(order.count())
+                .from(order)
+                .join(order.room.product, product)
+                .join(order.member, member)
+                .where(
+                        member.id.eq(memberId),
+                        product.id.eq(productId),
+                        loeEndDate(),
+                        order.orderStatus.eq(OrderStatus.CONFIRM_ORDER)
+                )
+                .fetchOne();
+
+        return count > 0;
+    }
+
+    private BooleanBuilder loeEndDate() {
+        LocalDateTime date = LocalDateTime.now();
+
+        DateTimeFormatter strDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String strNowDate = date.format(strDateFormat);
+
+        return nullSafeBuilder(() -> order.endDate.loe(strNowDate));
+    }
+
+    private BooleanBuilder nullSafeBuilder(Supplier<BooleanExpression> f) {
+        try {
+            return new BooleanBuilder(f.get());
+        } catch (IllegalArgumentException e) {
+            return new BooleanBuilder();
+        }
+    }
 }
