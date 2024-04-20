@@ -13,10 +13,12 @@ spring:
       - application-mysql.yml
       - application-jwt.yml
       - application-openapi.yml
+      - application-payment.yml
+      - application-swagger.yml
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
@@ -28,4 +30,5 @@ spring:
 
 logging:
   level:
-    root: info
+    root: debug
+

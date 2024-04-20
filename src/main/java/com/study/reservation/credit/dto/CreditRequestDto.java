@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Schema(name = "결제 요청 Request Dto")
 public class CreditRequestDto {
 
-    @Schema(name = "사용할 포인트")
+    @Schema(description = "사용할 포인트")
     private Integer usePoint;
 }

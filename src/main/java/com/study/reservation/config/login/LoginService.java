@@ -1,9 +1,9 @@
 package com.study.reservation.config.login;
 
 import com.study.reservation.admin.entity.Admin;
-import com.study.reservation.config.jwt.repository.AdminRepository;
 import com.study.reservation.config.exception.CustomException;
 import com.study.reservation.config.exception.ErrorCode;
+import com.study.reservation.config.jwt.repository.AdminRepository;
 import com.study.reservation.member.entity.Member;
 import com.study.reservation.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +27,7 @@ public class LoginService implements UserDetailsService {
         log.info("loadUserByUsername 실행 / username : {}", id);
 
         Member member = memberRepository.findByEmail(id).orElse(null);
+
         if (member != null) {
             return User.builder()
                     .username(member.getEmail())
@@ -37,6 +38,7 @@ public class LoginService implements UserDetailsService {
 
         Admin admin = adminRepository.findByCompanyNumber(id).orElse(null);
         if (admin != null) {
+
             return User.builder()
                     .username(admin.getCompanyNumber())
                     .password(admin.getPassword())

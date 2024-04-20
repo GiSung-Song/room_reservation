@@ -35,7 +35,7 @@ public class JwtAdminAuthenticationFilter extends OncePerRequestFilter {
         log.info("요청 Method : {}", request.getMethod());
 
         // /login 요청이 오면
-        if (request.getRequestURI().equals(NO_CHECK_URL) || !request.getRequestURI().startsWith("/admin")) {
+        if (request.getRequestURI().equals(NO_CHECK_URL)) {
             //다음 filter 실행
             filterChain.doFilter(request, response);
             return; //이후 필터 진행 막기

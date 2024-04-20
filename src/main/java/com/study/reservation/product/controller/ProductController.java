@@ -63,7 +63,7 @@ public class ProductController {
     }
 
     @Operation(summary = "숙소 등록", description = "숙소를 등록한다.")
-    @PostMapping("/product")
+    @PostMapping("/admin/product")
     public ResponseEntity<ApiResponse<String>> registerProduct(ProductRegisterDto productRegisterDto) {
         String companyNumber = commonUtils.getAuthUsername();
 
@@ -73,7 +73,7 @@ public class ProductController {
     }
 
     @Operation(summary = "숙소 정보 수정", description = "숙소 정보를 수정한다.")
-    @PatchMapping("/product/{id}")
+    @PatchMapping("/admin/product/{id}")
     public ResponseEntity<ApiResponse<String>> updateProduct(@PathVariable("id") Long productId, ProductUpdateDto productUpdateDto) {
         String companyNumber = commonUtils.getAuthUsername();
 

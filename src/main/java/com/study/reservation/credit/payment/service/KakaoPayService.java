@@ -6,15 +6,18 @@ import com.study.reservation.credit.payment.dto.KakaoApproveResponseDto;
 import com.study.reservation.credit.payment.dto.KakaoCancelResponseDto;
 import com.study.reservation.credit.payment.dto.KakaoReadyResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -60,8 +63,10 @@ public class KakaoPayService {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, headers);
 
         RestTemplate restTemplate = new RestTemplate();
+
         String url = "https://open-api.kakaopay.com/online/v1/payment/ready";
         kakaoReadyResponseDto = restTemplate.postForObject(url, requestEntity, KakaoReadyResponseDto.class);
+
         creditReadyDto = readyDto;
 
         return kakaoReadyResponseDto;
@@ -81,6 +86,9 @@ public class KakaoPayService {
 
         // 파라미터, 헤더
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, headers);
+
+        log.info("header : {}", requestEntity.getHeaders().toString());
+        log.info("body : {}", requestEntity.getBody().toString());
 
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://open-api.kakaopay.com/online/v1/payment/approve";
@@ -108,10 +116,13 @@ public class KakaoPayService {
         return kakaoCancelResponseDto;
     }
 
+    //헤더 설정
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "SECRET_KEY " + adminKey);
-        headers.set("Content-type", "application/json");
+        headers.set("Accept", "application/json");
+
         return headers;
     }
 

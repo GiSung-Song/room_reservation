@@ -41,7 +41,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "리뷰 삭제", description = "상품 리뷰를 삭제한다.")
-    @DeleteMapping("/product/{id}/delete")
+    @DeleteMapping("/product/{id}/review")
     public ResponseEntity<ApiResponse<String>> deleteProductReview(@PathVariable("id") Long productId, Long reviewId) {
         String email = commonUtils.getAuthUsername();
 

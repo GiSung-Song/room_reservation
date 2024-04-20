@@ -25,9 +25,16 @@ public class RoomService {
     private final AdminRepository adminRepository;
 
     @Transactional(readOnly = true)
-    public RoomDto infoRoom(Long roomId) {
+    public RoomDto infoRoom(Long productId, Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        if (room.getProduct().getId() != product.getId()) {
+            throw new CustomException(ErrorCode.NOT_VALID_ERROR);
+        }
 
         RoomDto roomDto = new RoomDto();
         roomDto.setRoomNum(room.getRoomNum());

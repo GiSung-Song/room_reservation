@@ -40,7 +40,7 @@ public class CreditController {
     }
 
     @Operation(summary = "카카오페이 결제", description = "카카오페이의 결제완료 후 결제 정보를 안내한다.")
-    @GetMapping("/credit/kakao/success")
+    @GetMapping("/kakao/success")
     public ResponseEntity<ApiResponse<CreditResponseDto>> successCredit(@RequestParam("pg_token") String pgToken) {
         KakaoApproveResponseDto kakaoApproveResponseDto = kakaoPayService.approveToKakaoPay(pgToken);
         CreditResponseDto creditResponseDto = creditService.creditSuccess(kakaoApproveResponseDto);
@@ -58,13 +58,13 @@ public class CreditController {
     }
 
     @Operation(summary = "카카오페이 결제 취소", description = "카카오페이 결제를 취소한다.")
-    @GetMapping("/credit/kakao/cancel")
+    @GetMapping("/kakao/cancel")
     public ResponseEntity<ApiResponse<String>> cancelCredit() {
         return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "카카오페이 결제를 취소하였습니다."));
     }
 
     @Operation(summary = "카카오페이 결제 실패", description = "카카오페이 결제가 실패했습니다.")
-    @GetMapping("/credit/kakao/fail")
+    @GetMapping("/kakao/fail")
     public ResponseEntity<ApiResponse<String>> failCredit() {
         return ResponseEntity.ok(ApiResponse.res(HTTP_STATUS_OK, "카카오페이 결제가 실패했습니다."));
     }

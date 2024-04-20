@@ -24,7 +24,7 @@ public class AdminCustomUsernamePasswordAuthenticationFilter extends AbstractAut
     private static final String DEFAULT_LOGIN_REQUEST_URL = "/admin/login"; // /login 으로 오는 요청을 처리
     private static final String HTTP_METHOD = "POST"; // 로그인 HTTP 메소드는 POST
     private static final String CONTENT_TYPE = "application/json"; // application/json 타입의 데이터로 오는 요청
-    private static final String USERNAME_KEY = "companyNumber"; //로그인 시 아이디를 이메일로 받기
+    private static final String USERNAME_KEY = "companyNumber"; //로그인 시 아이디를 사업자번호로 받기
     private static final String PASSWORD_KEY = "password"; //로그인 시 패스워드
     private static final AntPathRequestMatcher DEFAULT_LOGIN_PATH_REQUEST_MATCHER =
             new AntPathRequestMatcher(DEFAULT_LOGIN_REQUEST_URL, HTTP_METHOD);
@@ -49,8 +49,8 @@ public class AdminCustomUsernamePasswordAuthenticationFilter extends AbstractAut
         String messageBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
 
         //Json -> Java Object 변환
-        // {"email" : "이메일" , "password" : "비밀번호"}
-        // <"email", "이메일">, <"password", "비밀번호">
+        // {"companyNumber" : "사업자등록번호" , "password" : "비밀번호"}
+        // <"companyNumber", "사업자등록번호">, <"password", "비밀번호">
         Map<String, String> usernamePasswordMap = objectMapper.readValue(messageBody, Map.class);
 
         String companyNumber = usernamePasswordMap.get(USERNAME_KEY); //사업자등록번호

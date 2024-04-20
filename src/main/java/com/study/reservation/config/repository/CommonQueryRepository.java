@@ -6,22 +6,19 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.reservation.config.etc.SearchCondition;
-import com.study.reservation.member.entity.QMember;
 import com.study.reservation.order.dto.OrderDto;
 import com.study.reservation.order.etc.OrderStatus;
-import com.study.reservation.product.entity.QProduct;
 import com.study.reservation.room.entity.Room;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static com.study.reservation.member.entity.QMember.*;
+import static com.study.reservation.member.entity.QMember.member;
 import static com.study.reservation.order.entity.QOrder.order;
-import static com.study.reservation.product.entity.QProduct.*;
+import static com.study.reservation.product.entity.QProduct.product;
 import static com.study.reservation.room.entity.QRoom.room;
 
 @Repository
@@ -49,10 +46,10 @@ public class CommonQueryRepository {
                                         .where(
                                                 order.startDate.between(condition.getStartDate(), condition.getEndDate())
                                                         .or(order.endDate.between(condition.getStartDate(), condition.getEndDate()))
-                                        )
-                                        .where(
-                                                order.orderStatus.eq(OrderStatus.CANCEL_ORDER)
-                                                        .or(order.orderStatus.eq(OrderStatus.EMPTY_ORDER))
+                                                        .and(
+                                                                order.orderStatus.eq(OrderStatus.CANCEL_ORDER)
+                                                                        .or(order.orderStatus.eq(OrderStatus.EMPTY_ORDER))
+                                                        )
                                         )
                         ),
                         room.headCount.goe(condition.getCount()),
@@ -61,7 +58,7 @@ public class CommonQueryRepository {
                         room.product.productName.like("%" + condition.getProductName() + "%"),
                         room.product.location.like("%" + condition.getLocation() + "%")
                 )
-                .groupBy(room.product.id)
+                .groupBy(room.id) // 주요 식별자로 그룹화
                 .orderBy(room.product.id.asc())
                 .fetch();
     }
@@ -72,7 +69,8 @@ public class CommonQueryRepository {
                 .from(order)
                 .where(order.room.id.eq(roomId)
                         .and(order.startDate.loe(orderDto.getEndDate()))
-                        .and(order.endDate.goe(orderDto.getStartDate())))
+                        .and(order.endDate.goe(orderDto.getStartDate()))
+                        .and(order.orderStatus.in(OrderStatus.CONFIRM_ORDER, OrderStatus.READY_CREDIT)))
                 .fetchOne();
 
         return count > 0;

@@ -63,6 +63,7 @@ public class CreditService {
                 .order(order)
                 .totalPrice(order.getPrice() - dto.getUsePoint())
                 .usePoint(dto.getUsePoint())
+                .savePoint(0)
                 .build();
 
         creditRepository.save(readyCredit);
