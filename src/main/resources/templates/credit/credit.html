@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>아임포트 결제 페이지</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+</head>
+<body>
+<!-- 주문 정보 표시 -->
+<div>
+    <h2>주문 정보</h2>
+    <p>주문 번호: <span th:text="${readyDto.orderId}"></span></p>
+    <p>회원 이름: <span th:text="${readyDto.memberName}"></span></p>
+    <p>회원 전화번호: <span th:text="${readyDto.phoneNumber}"></span></p>
+    <p>시작 날짜: <span th:text="${readyDto.startDate}"></span></p>
+    <p>종료 날짜: <span th:text="${readyDto.endDate}"></span></p>
+    <p>상품명: <span th:text="${readyDto.productName}"></span></p>
+    <p>방 번호: <span th:text="${readyDto.roomNum}"></span></p>
+    <p>가격: <span th:text="${readyDto.price} + '원'"></span></p>
+    <p>보유 포인트: <span th:text="${readyDto.point} + '점'"></span></p>
+</div>
+
+<!-- 포인트 입력 칸 -->
+<div>
+    <h2>포인트 사용</h2>
+    <input type="number" id="pointInput" placeholder="사용할 포인트를 입력하세요">
+    <button onclick="updateTotalPrice()">포인트 적용</button>
+    <p id="usedPoint" hidden></p>
+</div>
+
+<!-- 최종 결제 금액 표시 -->
+<div>
+    <h2>최종 결제 금액</h2>
+    <p id="totalPrice">최종 결제 금액: <span id="finalAmount"></span>원</p>
+</div>
+
+<!-- 결제 버튼 -->
+<button id="paymentButton">결제하기</button>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function() {
+        updateTotalPrice();
+    });
+
+    function updateTotalPrice() {
+
+        let price = parseInt([[${readyDto.price}]]); // 상품 가격
+        let point = parseInt([[${readyDto.point}]]); // 보유 포인트
+        let usedPoint = parseInt($('#pointInput').val() || 0); // 입력된 포인트
+
+        // 최대 사용 가능한 포인트 계산
+        let maxPoint = Math.min(price, point);
+
+        if (usedPoint > maxPoint) { // 입력된 포인트가 최대 사용 가능한 포인트를 초과하는 경우
+            alert('최대 ' + maxPoint + '포인트까지 사용할 수 있습니다.');
+            $('#pointInput').val(maxPoint); // 입력 칸에 최대 사용 가능한 포인트 설정
+            usedPoint = maxPoint; // 실제 사용 포인트를 최대 사용 가능한 포인트로 설정
+        }
+
+        // 최종 결제 금액 계산
+        let totalPrice = price - usedPoint;
+        $('#finalAmount').text(totalPrice);
+
+        // 사용한 포인트 표시
+        $('#usedPoint').text('사용한 포인트: ' + usedPoint).show();
+    }
+
+    // 결제 버튼 클릭 시
+    $('#paymentButton').on('click', function () {
+        let IMP = window.IMP;
+        IMP.init("imp86155241");
+
+        let merchantId = [[${readyDto.orderId}]];
+        let memberName = [[${readyDto.memberName}]];
+        let productName = [[${readyDto.productName}]];
+        let price = [[${readyDto.price}]];
+        let finalAmountText = document.getElementById('finalAmount').innerText;
+        let finalAmountNum = parseInt(finalAmountText);
+        let usedPoint = price - finalAmountNum;
+        let memberPhone = [[${readyDto.phoneNumber}]];
+        let orderId = [[${readyDto.orderId}]];
+
+        // iamport 결제 요청
+        IMP.request_pay({
+            pg: "html5_inicis.INIpayTest",
+            pay_method: "card",
+            merchant_uid: merchantId,
+            name: productName,
+            amount: finalAmountNum,
+            buyer_name: memberName,
+            buyer_tel: memberPhone,
+        }, function (rsp) {
+            if (rsp.success) {
+                //결제 성공 시 검증 로직
+                $.ajax({
+                    type: "POST",
+                    url: "/iamport/verify/" + rsp.imp_uid,
+                }).done(function(data) {
+                    //결제 금액과 검증 금액이 같으면 성공
+                    if (rsp.paid_amount == data.response.amount) {
+                        let impUid = rsp.imp_uid;
+
+                        console.log(usedPoint);
+                        console.log(finalAmountNum);
+                        console.log(impUid);
+                        console.log(memberPhone);
+                        console.log(memberName);
+                        console.log(orderId);
+
+                        let data = {
+                                usedPoint : usedPoint,
+                                totalPrice : finalAmountNum,
+                                impUid : impUid,
+                                phoneNumber : memberPhone,
+                                memberName : memberName,
+                                orderId : orderId
+                        }
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/credit/success",
+                            contentType: "application/json",
+                            data: JSON.stringify(data)
+                        })
+                    } else {
+                        alert("결제 실패!");
+                    }
+                })
+            } else {
+                alert("결제 실패!");
+            }
+        });
+    });
+
+</script>
+
+</body>
+</html>

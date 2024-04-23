@@ -105,6 +105,14 @@ public class OrderService {
             throw new CustomException(ErrorCode.NOT_ACCEPT_GET_INFO_MEMBER);
         }
 
+        if (order.getOrderStatus() == OrderStatus.CANCEL_ORDER || order.getOrderStatus() == OrderStatus.EMPTY_ORDER) {
+            throw new CustomException(ErrorCode.NOT_VALID_ERROR);
+        }
+
+        if (order.getOrderStatus() == OrderStatus.CONFIRM_ORDER) {
+            throw new CustomException(ErrorCode.NOT_VALID_CANCEL_BEFORE_REFUND);
+        }
+
         order.setOrderStatus(OrderStatus.CANCEL_ORDER);
 
         return OrderResDto.toDto(order);

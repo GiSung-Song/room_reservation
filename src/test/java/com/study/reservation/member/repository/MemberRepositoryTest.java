@@ -46,6 +46,14 @@ class MemberRepositoryTest {
         assertThat(findMember.getName()).isEqualTo("test");
     }
 
+    @Test
+    @DisplayName("찾기")
+    void findByNameAndPhoneNumber() {
+        Member member = memberRepository.findByNameAndPhoneNumber("test", "1234").get();
+
+        assertThat(member.getNickname()).isEqualTo("test");
+    }
+
     @Nested
     class save {
         @Test

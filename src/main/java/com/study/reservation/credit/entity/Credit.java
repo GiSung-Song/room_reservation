@@ -34,7 +34,7 @@ public class Credit {
     @Column(nullable = false)
     private Integer savePoint;
 
-    private String tid; //결제 고유번호 20자리
+    private String impUid;
 
     @Column(nullable = false)
     @Builder.Default
@@ -54,5 +54,17 @@ public class Credit {
 
     public void updateSavePoint(Integer savePoint) {
         this.savePoint = savePoint;
+    }
+
+    public void updateTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public void updateImpUid(String impUid) {
+        this.impUid = impUid;
+    }
+
+    public void updateUsePoint(int usePoint) {
+        this.usePoint = usePoint;
     }
 }

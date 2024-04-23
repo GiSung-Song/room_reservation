@@ -1,6 +1,7 @@
 package com.study.reservation.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.study.reservation.config.security.SecurityConfig;
 import com.study.reservation.member.dto.MemberSignUpDto;
 import com.study.reservation.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;

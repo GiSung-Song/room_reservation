@@ -13,8 +13,8 @@ spring:
       - application-mysql.yml
       - application-jwt.yml
       - application-openapi.yml
-      - application-payment.yml
       - application-swagger.yml
+      - application-iamport.yml
 
   jpa:
     hibernate:
@@ -30,5 +30,5 @@ spring:
 
 logging:
   level:
-    root: debug
+    root: info
 

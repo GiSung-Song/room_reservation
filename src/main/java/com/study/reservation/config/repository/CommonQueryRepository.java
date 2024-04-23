@@ -68,8 +68,8 @@ public class CommonQueryRepository {
                 .select(order.count())
                 .from(order)
                 .where(order.room.id.eq(roomId)
-                        .and(order.startDate.loe(orderDto.getEndDate()))
-                        .and(order.endDate.goe(orderDto.getStartDate()))
+                        .and(order.startDate.lt(orderDto.getEndDate()))  // 주어진 종료날짜보다 이전에 시작하는 주문
+                        .and(order.endDate.gt(orderDto.getStartDate()))  // 주어진 시작날짜보다 이후에 종료하는 주문
                         .and(order.orderStatus.in(OrderStatus.CONFIRM_ORDER, OrderStatus.READY_CREDIT)))
                 .fetchOne();
 

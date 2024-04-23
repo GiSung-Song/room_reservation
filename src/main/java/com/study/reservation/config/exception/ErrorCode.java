@@ -35,6 +35,7 @@ public enum ErrorCode {
     NOT_VALID_PRODUCT_NAME(HttpStatus.BAD_REQUEST, "숙소명은 30자 이하입니다."),
 
     NOT_VALID_REFUND_DAY(HttpStatus.BAD_REQUEST, "당일부터는 환불이 불가능합니다."),
+    NOT_VALID_CANCEL_BEFORE_REFUND(HttpStatus.BAD_REQUEST, "환불 신청 시 자동으로 취소됩니다."),
 
     NOT_VALID_REQUEST_HEAD_COUNT(HttpStatus.BAD_REQUEST, "객실의 수용인원보다 많은 인원은 허용되지 않습니다."),
     NOT_VALID_REQUEST_ROOM_ORDER(HttpStatus.BAD_REQUEST, "이미 해당 날짜의 예약이 되어있습니다."),

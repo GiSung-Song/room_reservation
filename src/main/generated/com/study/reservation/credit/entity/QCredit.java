@@ -28,11 +28,11 @@ public class QCredit extends EntityPathBase<Credit> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final StringPath impUid = createString("impUid");
+
     public final com.study.reservation.order.entity.QOrder order;
 
     public final NumberPath<Integer> savePoint = createNumber("savePoint", Integer.class);
-
-    public final StringPath tid = createString("tid");
 
     public final NumberPath<Integer> totalPrice = createNumber("totalPrice", Integer.class);
 

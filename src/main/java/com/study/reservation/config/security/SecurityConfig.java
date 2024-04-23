@@ -155,6 +155,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/member").hasRole("MEMBER")
                         .requestMatchers(HttpMethod.POST, "/product/{id}/review").hasRole("MEMBER")
                         .requestMatchers(HttpMethod.DELETE, "/product/{id}/review").hasRole("MEMBER")
+                        .requestMatchers(HttpMethod.POST, "/iamport/**").hasRole("MEMBER")
                         .anyRequest().authenticated()
                 )
                 .addFilterAfter(customUsernamePasswordAuthenticationFilter(), LogoutFilter.class)

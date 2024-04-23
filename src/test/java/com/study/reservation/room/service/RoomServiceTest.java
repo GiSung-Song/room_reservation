@@ -190,10 +190,11 @@ class RoomServiceTest {
             Long fakeId = 0L;
 
             ReflectionTestUtils.setField(room, "id", fakeId);
+            ReflectionTestUtils.setField(product, "id", fakeId);
 
             given(roomRepository.findById(fakeId)).willReturn(Optional.ofNullable(room));
 
-            RoomDto roomDto = roomService.infoRoom(fakeId);
+            RoomDto roomDto = roomService.infoRoom(fakeId, fakeId);
 
             assertEquals(roomDto.getDescription(), room.getDescription());
             assertEquals(roomDto.getPrice(), room.getPrice());
@@ -205,7 +206,7 @@ class RoomServiceTest {
         void 조회_실패_테스트() {
             doThrow(new CustomException(ErrorCode.NOT_FOUND_ROOM)).when(roomRepository).findById(any());
 
-            assertThrows(CustomException.class, () -> roomService.infoRoom(any()));
+            assertThrows(CustomException.class, () -> roomService.infoRoom(any(), any()));
         }
     }
 
